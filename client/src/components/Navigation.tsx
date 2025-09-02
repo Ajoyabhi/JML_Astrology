@@ -3,17 +3,20 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Moon } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isAuthenticated, isLoading } = useAuth();
   const [location] = useLocation();
 
+  const { t } = useLanguage();
+  
   const navigationItems = [
-    { href: "/calculators", label: "Calculators" },
-    { href: "/horoscope", label: "Horoscope" },
-    { href: "/astrologers", label: "Best Astrologers" },
-    { href: "/blog", label: "Blog" },
+    { href: "/calculators", label: t('nav.calculators') },
+    { href: "/horoscope", label: t('nav.horoscope') },
+    { href: "/astrologers", label: t('nav.astrologers') },
+    { href: "/blog", label: t('nav.blog') },
   ];
 
   return (
@@ -59,7 +62,7 @@ export default function Navigation() {
                 className="border-primary/30 text-primary hover:bg-primary/10"
                 data-testid="button-logout"
               >
-                Logout
+                {t('nav.logout')}
               </Button>
             ) : (
               <>
@@ -69,14 +72,14 @@ export default function Navigation() {
                   className="text-muted-foreground hover:text-primary"
                   data-testid="button-login"
                 >
-                  Login
+                  {t('nav.login')}
                 </Button>
                 <Button
                   onClick={() => window.location.href = "/api/login"}
                   className="bg-gradient-to-r from-primary to-gold-400 text-cosmic-900 hover:shadow-lg"
                   data-testid="button-signup"
                 >
-                  Sign Up
+                  {t('nav.signup')}
                 </Button>
               </>
             )}
@@ -124,7 +127,7 @@ export default function Navigation() {
                   className="w-full border-primary/30 text-primary hover:bg-primary/10"
                   data-testid="mobile-button-logout"
                 >
-                  Logout
+                  {t('nav.logout')}
                 </Button>
               ) : (
                 <>
@@ -134,14 +137,14 @@ export default function Navigation() {
                     className="w-full text-muted-foreground hover:text-primary"
                     data-testid="mobile-button-login"
                   >
-                    Login
+                    {t('nav.login')}
                   </Button>
                   <Button
                     onClick={() => window.location.href = "/api/login"}
                     className="w-full bg-gradient-to-r from-primary to-gold-400 text-cosmic-900"
                     data-testid="mobile-button-signup"
                   >
-                    Sign Up
+                    {t('nav.signup')}
                   </Button>
                 </>
               )}
