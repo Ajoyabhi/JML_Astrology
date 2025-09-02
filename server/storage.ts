@@ -225,12 +225,15 @@ export class DatabaseStorage implements IStorage {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
+    // Capitalize the zodiac sign to match the database format
+    const capitalizedSign = zodiacSign.charAt(0).toUpperCase() + zodiacSign.slice(1).toLowerCase();
+
     const [horoscope] = await db
       .select()
       .from(horoscopes)
       .where(
         and(
-          eq(horoscopes.zodiacSign, zodiacSign),
+          eq(horoscopes.zodiacSign, capitalizedSign),
           eq(horoscopes.type, type),
           sql`${horoscopes.date} >= ${startOfDay}`,
           sql`${horoscopes.date} <= ${endOfDay}`
