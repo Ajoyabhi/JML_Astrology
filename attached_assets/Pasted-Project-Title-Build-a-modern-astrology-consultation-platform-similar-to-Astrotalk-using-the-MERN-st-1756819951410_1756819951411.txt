@@ -1,0 +1,64 @@
+Project Title: Build a modern astrology consultation platform similar to Astrotalk using the MERN stack.
+Objective: Develop a full-featured, scalable astrology platform where users can generate horoscopes, use astrology calculators, browse astrologer profiles, and book consultations (chat, call, or video) with secure payments. The design should be clean, celestial-themed, and mobile-responsive.
+
+1. Core Website Features
+1. Homepage & Navigation
+    * Hero section with call-to-action buttons (Get Your Horoscope, Talk to Astrologer).
+    * Sticky navigation: Free Kundli, Kundli Matching, Calculators, Horoscope, Best Astrologers, Blog, Login/Signup.
+    * Multi-language support.
+2. Astrology Calculators
+    * Tools for Love Match, Numerology, Birth Chart, Nakshatra, Dasha, Moon Phase, Transit Chart, etc.
+    * Input forms for date/time/location of birth with real-time calculation results.
+3. Horoscope Pages
+    * Daily, Weekly, Monthly, and Yearly horoscopes.
+    * Chinese horoscope & Tomorrow’s horoscope pages.
+4. Astrologer Directory & Profiles
+    * Searchable list with filters (location, expertise, languages spoken).
+    * Profile cards with ratings, reviews, consultation fee, experience.
+5. Consultation Booking
+    * Chat, Voice Call, and Video Session options.
+    * Secure payments with wallet integration.
+    * Booking history and invoices.
+6. Content & Engagement
+    * Blog with astrology guides and articles.
+    * Notification system for horoscope updates, offers, and session reminders.
+    * Optional: AstroMall (gemstones, remedies).
+
+2. UI/UX & Design Requirements
+* Theme: Celestial/astrology vibe with deep blues, gold highlights, and smooth gradients.
+* Framework: React.js with TailwindCSS or Material-UI for a clean, responsive UI.
+* Animations: Framer Motion for smooth transitions.
+* User Flow:
+    * Landing → Horoscope → Select Astrologer → Book & Pay → Consultation → Rating & Review.
+* Accessibility: WCAG compliance, mobile-first design.
+
+3. Tech Stack (MERN)
+* Frontend:
+    * React.js + Vite or Next.js for optimized SPA/SSR rendering.
+    * TailwindCSS or Material-UI for styling.
+    * Redux Toolkit for global state management.
+    * React Query (TanStack) for API data fetching & caching.
+* Backend:
+    * Node.js + Express.js REST API.
+    * GraphQL optional for flexible queries.
+    * JWT-based authentication (with refresh tokens).
+    * Role-based access control for Admin, Astrologers, and Users.
+* Database:
+    * MongoDB with Mongoose for astrologer profiles, user accounts, booking, payment logs.
+    * Indexing for fast searches.
+* Real-Time Communication:
+    * WebSockets (Socket.io) for live chat.
+    * WebRTC for video/voice sessions.
+Payments:
+* Razorpay/Stripe integration for transactions and wallet top-ups.
+Deliverables from AI Agent
+1. Full MERN project architecture with folder structure.
+2. Wireframes for Homepage, Horoscope page, Astrologer listing, and Booking UI.
+3. Responsive React components with Tailwind/Material-UI.
+4. REST API endpoints for:
+    * User Auth
+    * Astrologer CRUD
+    * Booking & Payments
+    * Horoscope/Calculator Data
+5. WebRTC/Socket.io integration for calls and live chat.
+6. Deployment-ready Docker configuration for AWS.
