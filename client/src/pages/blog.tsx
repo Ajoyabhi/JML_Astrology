@@ -3,6 +3,8 @@ import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Newspaper } from "lucide-react";
+import { BlogPostSkeleton } from "@/components/SkeletonLoader";
+import { useLanguage } from "@/contexts/LanguageContext";
 import type { BlogPost } from "@shared/schema";
 
 export default function Blog() {
@@ -30,23 +32,7 @@ export default function Blog() {
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[...Array(6)].map((_, i) => (
-                <Card key={i} className="glass-card">
-                  <div className="animate-pulse">
-                    <div className="w-full h-48 bg-muted"></div>
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-20 h-4 bg-muted rounded"></div>
-                        <div className="w-16 h-3 bg-muted rounded"></div>
-                      </div>
-                      <div className="h-6 bg-muted rounded mb-3"></div>
-                      <div className="space-y-2">
-                        <div className="h-4 bg-muted rounded"></div>
-                        <div className="h-4 bg-muted rounded"></div>
-                        <div className="h-4 bg-muted rounded w-2/3"></div>
-                      </div>
-                    </CardContent>
-                  </div>
-                </Card>
+                <BlogPostSkeleton key={i} />
               ))}
             </div>
           ) : posts.length > 0 ? (
