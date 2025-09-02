@@ -4,9 +4,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import type { Consultation, User } from "@shared/schema";
 import { TrendingUp, MessageCircle, Calculator, User as UserIcon, Calendar } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Home() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   
   const { data: consultations = [] } = useQuery<Consultation[]>({
     queryKey: ["/api/consultations"],
@@ -21,12 +23,12 @@ export default function Home() {
           {/* Welcome Section */}
           <div className="text-center mb-16">
             <h1 className="text-3xl md:text-4xl font-serif font-bold mb-4">
-              Welcome back, <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                {(user as User)?.firstName || 'Cosmic Seeker'}
+              {t('home.welcome')} <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                {(user as User)?.firstName || t('home.cosmic_seeker')}
               </span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Your personalized astrology dashboard awaits
+              {t('home.dashboard')}
             </p>
           </div>
 
@@ -36,13 +38,13 @@ export default function Home() {
               <div className="w-16 h-16 bg-gradient-to-br from-primary to-gold-400 rounded-full flex items-center justify-center mx-auto mb-4">
                 <TrendingUp className="h-8 w-8 text-cosmic-900" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">Today's Horoscope</h3>
-              <p className="text-muted-foreground mb-4">Get your daily cosmic guidance</p>
+              <h3 className="text-xl font-semibold text-foreground mb-2">{t('home.daily_horoscope')}</h3>
+              <p className="text-muted-foreground mb-4">{t('home.daily_horoscope_desc')}</p>
               <button 
                 className="px-6 py-2 bg-gradient-to-r from-primary to-gold-400 text-cosmic-900 rounded-lg font-medium hover:shadow-lg transition-all duration-200"
                 data-testid="button-daily-horoscope"
               >
-                Read Now
+                {t('home.read_now')}
               </button>
             </div>
 
@@ -50,13 +52,13 @@ export default function Home() {
               <div className="w-16 h-16 bg-gradient-to-br from-accent to-mystic-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <MessageCircle className="h-8 w-8 text-foreground" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">Quick Consultation</h3>
-              <p className="text-muted-foreground mb-4">Chat with available astrologers</p>
+              <h3 className="text-xl font-semibold text-foreground mb-2">{t('home.quick_consultation')}</h3>
+              <p className="text-muted-foreground mb-4">{t('home.quick_consultation_desc')}</p>
               <button 
                 className="px-6 py-2 bg-gradient-to-r from-accent to-mystic-600 text-foreground rounded-lg font-medium hover:shadow-lg transition-all duration-200"
                 data-testid="button-quick-chat"
               >
-                Start Chat
+                {t('home.start_chat')}
               </button>
             </div>
 
@@ -64,20 +66,20 @@ export default function Home() {
               <div className="w-16 h-16 bg-gradient-to-br from-gold-400 to-primary rounded-full flex items-center justify-center mx-auto mb-4">
                 <Calculator className="h-8 w-8 text-cosmic-900" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">Birth Chart</h3>
-              <p className="text-muted-foreground mb-4">Generate your complete natal chart</p>
+              <h3 className="text-xl font-semibold text-foreground mb-2">{t('home.birth_chart')}</h3>
+              <p className="text-muted-foreground mb-4">{t('home.birth_chart_desc')}</p>
               <button 
                 className="px-6 py-2 bg-gradient-to-r from-gold-400 to-primary text-cosmic-900 rounded-lg font-medium hover:shadow-lg transition-all duration-200"
                 data-testid="button-birth-chart"
               >
-                Generate
+                {t('home.generate')}
               </button>
             </div>
           </div>
 
           {/* Recent Consultations */}
           <div className="glass-card rounded-xl p-6">
-            <h2 className="text-2xl font-serif font-bold mb-6 text-foreground">Recent Consultations</h2>
+            <h2 className="text-2xl font-serif font-bold mb-6 text-foreground">{t('home.recent_consultations')}</h2>
             {consultations.length > 0 ? (
               <div className="space-y-4">
                 {consultations.slice(0, 3).map((consultation) => (
@@ -106,12 +108,12 @@ export default function Home() {
             ) : (
               <div className="text-center py-12">
                 <Calendar className="h-16 w-16 text-muted-foreground mb-4 mx-auto" />
-                <p className="text-muted-foreground">No consultations yet</p>
+                <p className="text-muted-foreground">{t('home.no_consultations')}</p>
                 <button 
                   className="mt-4 px-6 py-2 bg-gradient-to-r from-primary to-gold-400 text-cosmic-900 rounded-lg font-medium hover:shadow-lg transition-all duration-200"
                   data-testid="button-book-first-consultation"
                 >
-                  Book Your First Consultation
+                  {t('home.book_first')}
                 </button>
               </div>
             )}

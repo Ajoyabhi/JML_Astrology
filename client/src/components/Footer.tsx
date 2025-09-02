@@ -1,7 +1,10 @@
 import { Link } from "wouter";
 import { Moon, Facebook, Twitter, Instagram, Youtube } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Footer() {
+  const { t, setLanguage, language } = useLanguage();
+  
   return (
     <footer className="bg-card border-t border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -17,7 +20,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-muted-foreground">
-              Your trusted companion in exploring the mysteries of the cosmos and unlocking your cosmic potential.
+              {t('footer.tagline')}
             </p>
             <div className="flex space-x-4">
               <a 
@@ -53,7 +56,7 @@ export default function Footer() {
 
           {/* Services */}
           <div>
-            <h3 className="text-lg font-semibold text-foreground mb-4">Services</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-4">{t('footer.services')}</h3>
             <ul className="space-y-3">
               <li>
                 <Link 
@@ -105,7 +108,7 @@ export default function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="text-lg font-semibold text-foreground mb-4">Resources</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-4">{t('footer.resources')}</h3>
             <ul className="space-y-3">
               <li>
                 <Link 
@@ -157,7 +160,7 @@ export default function Footer() {
 
           {/* Support */}
           <div>
-            <h3 className="text-lg font-semibold text-foreground mb-4">Support</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-4">{t('footer.support')}</h3>
             <ul className="space-y-3">
               <li>
                 <a 
@@ -210,25 +213,34 @@ export default function Footer() {
 
         <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-muted-foreground text-sm">
-            © 2024 AstroMystic. All rights reserved. Unlocking cosmic wisdom for every soul.
+            {t('footer.copyright')}
           </p>
           <div className="flex items-center space-x-6 mt-4 md:mt-0">
-            <span className="text-xs text-muted-foreground">Available in:</span>
+            <span className="text-xs text-muted-foreground">{t('footer.available_in')}</span>
             <div className="flex space-x-3">
               <button 
-                className="text-xs text-muted-foreground hover:text-primary transition-colors duration-200"
+                onClick={() => setLanguage('en')}
+                className={`text-xs transition-colors duration-200 ${
+                  language === 'en' ? 'text-primary font-medium' : 'text-muted-foreground hover:text-primary'
+                }`}
                 data-testid="language-english"
               >
                 English
               </button>
               <button 
-                className="text-xs text-muted-foreground hover:text-primary transition-colors duration-200"
+                onClick={() => setLanguage('hi')}
+                className={`text-xs transition-colors duration-200 ${
+                  language === 'hi' ? 'text-primary font-medium' : 'text-muted-foreground hover:text-primary'
+                }`}
                 data-testid="language-hindi"
               >
                 हिंदी
               </button>
               <button 
-                className="text-xs text-muted-foreground hover:text-primary transition-colors duration-200"
+                onClick={() => setLanguage('bn')}
+                className={`text-xs transition-colors duration-200 ${
+                  language === 'bn' ? 'text-primary font-medium' : 'text-muted-foreground hover:text-primary'
+                }`}
                 data-testid="language-bengali"
               >
                 বাংলা

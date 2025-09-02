@@ -7,10 +7,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
 import type { Horoscope } from "@shared/schema";
 import { Calendar } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Horoscope() {
   const [selectedSign, setSelectedSign] = useState<string>("aries");
   const [activeType, setActiveType] = useState<string>("daily");
+  const { t } = useLanguage();
 
   const { data: horoscope, isLoading } = useQuery<Horoscope>({
     queryKey: ["/api/horoscope", selectedSign, activeType],
@@ -41,21 +43,21 @@ export default function Horoscope() {
           <div className="text-center mb-16">
             <h1 className="text-3xl md:text-4xl font-serif font-bold mb-4">
               <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Your Horoscope
+                {t('horoscope.title')}
               </span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Stay aligned with cosmic energies through personalized horoscope readings
+              {t('horoscope.subtitle')}
             </p>
           </div>
 
           {/* Horoscope Type Tabs */}
           <Tabs value={activeType} onValueChange={setActiveType} className="w-full mb-8">
             <TabsList className="grid w-full grid-cols-4 glass-card max-w-md mx-auto">
-              <TabsTrigger value="daily" data-testid="tab-daily">Daily</TabsTrigger>
-              <TabsTrigger value="weekly" data-testid="tab-weekly">Weekly</TabsTrigger>
-              <TabsTrigger value="monthly" data-testid="tab-monthly">Monthly</TabsTrigger>
-              <TabsTrigger value="yearly" data-testid="tab-yearly">Yearly</TabsTrigger>
+              <TabsTrigger value="daily" data-testid="tab-daily">{t('horoscope.daily')}</TabsTrigger>
+              <TabsTrigger value="weekly" data-testid="tab-weekly">{t('horoscope.weekly')}</TabsTrigger>
+              <TabsTrigger value="monthly" data-testid="tab-monthly">{t('horoscope.monthly')}</TabsTrigger>
+              <TabsTrigger value="yearly" data-testid="tab-yearly">{t('horoscope.yearly')}</TabsTrigger>
             </TabsList>
           </Tabs>
 
