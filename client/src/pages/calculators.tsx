@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { Star } from "lucide-react";
 
 export default function Calculators() {
   const { toast } = useToast();
@@ -365,7 +366,7 @@ export default function Calculators() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-center py-12">
-                    <i className="fas fa-star text-4xl text-mystic-500 mb-4"></i>
+                    <Star className="h-16 w-16 text-mystic-500 mb-4 mx-auto" />
                     <p className="text-muted-foreground mb-4">Coming Soon!</p>
                     <p className="text-sm text-muted-foreground">
                       Advanced Nakshatra calculations will be available in the next update.
