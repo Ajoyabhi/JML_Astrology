@@ -1,10 +1,14 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { AnimatePresence } from "framer-motion";
+import PageTransition from "@/components/PageTransition";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import NavigationProgress from "@/components/NavigationProgress";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
@@ -15,28 +19,110 @@ import Blog from "@/pages/blog";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
+  const [location] = useLocation();
+
+  // Show loading screen during auth check
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner 
+          size="lg" 
+          text="Loading your cosmic journey..." 
+          className="text-center"
+        />
+      </div>
+    );
+  }
 
   return (
-    <Switch>
-      {isLoading || !isAuthenticated ? (
-        <>
-          <Route path="/" component={Landing} />
-          <Route path="/calculators" component={Calculators} />
-          <Route path="/horoscope" component={Horoscope} />
-          <Route path="/astrologers" component={Astrologers} />
-          <Route path="/blog" component={Blog} />
-        </>
-      ) : (
-        <>
-          <Route path="/" component={Home} />
-          <Route path="/calculators" component={Calculators} />
-          <Route path="/horoscope" component={Horoscope} />
-          <Route path="/astrologers" component={Astrologers} />
-          <Route path="/blog" component={Blog} />
-        </>
-      )}
-      <Route component={NotFound} />
-    </Switch>
+    <AnimatePresence mode="wait" initial={false}>
+      <Switch key={location}>
+        {!isAuthenticated ? (
+          <>
+            <Route path="/">
+              {() => (
+                <PageTransition>
+                  <Landing />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/calculators">
+              {() => (
+                <PageTransition>
+                  <Calculators />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/horoscope">
+              {() => (
+                <PageTransition>
+                  <Horoscope />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/astrologers">
+              {() => (
+                <PageTransition>
+                  <Astrologers />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/blog">
+              {() => (
+                <PageTransition>
+                  <Blog />
+                </PageTransition>
+              )}
+            </Route>
+          </>
+        ) : (
+          <>
+            <Route path="/">
+              {() => (
+                <PageTransition>
+                  <Home />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/calculators">
+              {() => (
+                <PageTransition>
+                  <Calculators />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/horoscope">
+              {() => (
+                <PageTransition>
+                  <Horoscope />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/astrologers">
+              {() => (
+                <PageTransition>
+                  <Astrologers />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/blog">
+              {() => (
+                <PageTransition>
+                  <Blog />
+                </PageTransition>
+              )}
+            </Route>
+          </>
+        )}
+        <Route>
+          {() => (
+            <PageTransition>
+              <NotFound />
+            </PageTransition>
+          )}
+        </Route>
+      </Switch>
+    </AnimatePresence>
   );
 }
 
@@ -46,6 +132,7 @@ function App() {
       <LanguageProvider>
         <TooltipProvider>
           <div className="min-h-screen cosmic-bg">
+            <NavigationProgress />
             <Toaster />
             <Router />
           </div>

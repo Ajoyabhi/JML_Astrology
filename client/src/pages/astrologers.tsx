@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Star, Users, Globe, GraduationCap, Languages, DollarSign, Phone, MessageCircle, Video } from "lucide-react";
+import { CardSkeleton } from "@/components/SkeletonLoader";
+import { useLanguage } from "@/contexts/LanguageContext";
 import type { Astrologer } from "@shared/schema";
 
 export default function Astrologers() {
@@ -89,25 +91,7 @@ export default function Astrologers() {
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[...Array(6)].map((_, i) => (
-                <Card key={i} className="glass-card">
-                  <CardContent className="p-6">
-                    <div className="animate-pulse">
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="w-16 h-16 bg-muted rounded-full"></div>
-                        <div className="flex-1">
-                          <div className="h-4 bg-muted rounded mb-2"></div>
-                          <div className="h-3 bg-muted rounded mb-2"></div>
-                          <div className="h-3 bg-muted rounded w-2/3"></div>
-                        </div>
-                      </div>
-                      <div className="space-y-3">
-                        <div className="h-3 bg-muted rounded"></div>
-                        <div className="h-3 bg-muted rounded"></div>
-                        <div className="h-3 bg-muted rounded"></div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <CardSkeleton key={i} />
               ))}
             </div>
           ) : (
@@ -134,7 +118,7 @@ export default function Astrologers() {
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className={`w-3 h-3 ${i < Math.floor(parseFloat(astrologer.rating)) ? 'fill-current' : ''}`}
+                                className={`w-3 h-3 ${i < Math.floor(parseFloat(astrologer.rating || '0')) ? 'fill-current' : ''}`}
                               />
                             ))}
                           </div>
