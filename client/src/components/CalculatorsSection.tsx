@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
+import { Heart, Calculator, PieChart, Star, Clock, Moon } from "lucide-react";
 
 export default function CalculatorsSection() {
   const [, setLocation] = useLocation();
@@ -7,7 +8,7 @@ export default function CalculatorsSection() {
   const calculators = [
     {
       id: "love-match",
-      icon: "fas fa-heart",
+icon: Heart,
       title: "Love Match Calculator",
       description: "Discover your compatibility with your partner based on astrological principles",
       gradient: "from-primary to-gold-400",
@@ -17,7 +18,7 @@ export default function CalculatorsSection() {
     },
     {
       id: "numerology",
-      icon: "fas fa-calculator",
+icon: Calculator,
       title: "Numerology Calculator",
       description: "Uncover the hidden meanings behind numbers in your life and destiny",
       gradient: "from-accent to-mystic-600",
@@ -27,7 +28,7 @@ export default function CalculatorsSection() {
     },
     {
       id: "birth-chart",
-      icon: "fas fa-chart-pie",
+icon: PieChart,
       title: "Birth Chart Generator",
       description: "Generate your complete natal chart with detailed planetary positions",
       gradient: "from-gold-400 to-primary",
@@ -37,7 +38,7 @@ export default function CalculatorsSection() {
     },
     {
       id: "nakshatra",
-      icon: "fas fa-star",
+icon: Star,
       title: "Nakshatra Finder",
       description: "Discover your birth star and its significance in Vedic astrology",
       gradient: "from-mystic-500 to-accent",
@@ -47,7 +48,7 @@ export default function CalculatorsSection() {
     },
     {
       id: "dasha",
-      icon: "fas fa-clock",
+icon: Clock,
       title: "Dasha Calculator",
       description: "Calculate your planetary periods and their influence on your life",
       gradient: "from-primary to-mystic-500",
@@ -57,7 +58,7 @@ export default function CalculatorsSection() {
     },
     {
       id: "moon-phase",
-      icon: "fas fa-moon",
+icon: Moon,
       title: "Moon Phase Tracker",
       description: "Track lunar phases and their impact on your emotional cycles",
       gradient: "from-accent to-gold-400",
@@ -90,7 +91,7 @@ export default function CalculatorsSection() {
             >
               <div className="flex items-center mb-4">
                 <div className={`w-12 h-12 bg-gradient-to-br ${calculator.gradient} rounded-lg flex items-center justify-center mr-4`}>
-                  <i className={`${calculator.icon} text-cosmic-900 text-xl`}></i>
+                  <calculator.icon className="h-6 w-6 text-cosmic-900" />
                 </div>
                 <h3 className="text-xl font-semibold text-foreground">{calculator.title}</h3>
               </div>

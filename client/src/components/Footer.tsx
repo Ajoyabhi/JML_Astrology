@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { Moon, Facebook, Twitter, Instagram, Youtube } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -9,7 +10,7 @@ export default function Footer() {
           <div className="space-y-4">
             <Link href="/" className="flex items-center space-x-2" data-testid="footer-logo">
               <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
-                <i className="fas fa-moon text-cosmic-900"></i>
+                <Moon className="h-4 w-4 text-cosmic-900" />
               </div>
               <span className="text-xl font-serif font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 AstroMystic
@@ -24,28 +25,28 @@ export default function Footer() {
                 className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/20 transition-all duration-200"
                 data-testid="social-facebook"
               >
-                <i className="fab fa-facebook-f"></i>
+                <Facebook className="h-4 w-4" />
               </a>
               <a 
                 href="#" 
                 className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/20 transition-all duration-200"
                 data-testid="social-twitter"
               >
-                <i className="fab fa-twitter"></i>
+                <Twitter className="h-4 w-4" />
               </a>
               <a 
                 href="#" 
                 className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/20 transition-all duration-200"
                 data-testid="social-instagram"
               >
-                <i className="fab fa-instagram"></i>
+                <Instagram className="h-4 w-4" />
               </a>
               <a 
                 href="#" 
                 className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/20 transition-all duration-200"
                 data-testid="social-youtube"
               >
-                <i className="fab fa-youtube"></i>
+                <Youtube className="h-4 w-4" />
               </a>
             </div>
           </div>

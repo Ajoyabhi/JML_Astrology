@@ -2,7 +2,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Newspaper } from "lucide-react";
 import type { BlogPost } from "@shared/schema";
 
 export default function Blog() {
@@ -74,7 +74,7 @@ export default function Blog() {
                         {post.category}
                       </span>
                       <span className="text-xs text-muted-foreground" data-testid={`text-post-date-${post.id}`}>
-                        {new Date(post.createdAt).toLocaleDateString()}
+                        {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : 'Recent'}
                       </span>
                     </div>
                     <h3 className="text-xl font-semibold text-foreground mb-3 line-clamp-2" data-testid={`text-post-title-${post.id}`}>
@@ -91,7 +91,7 @@ export default function Blog() {
                           className="w-8 h-8 rounded-full object-cover"
                         />
                         <span className="text-sm text-muted-foreground" data-testid={`text-post-author-${post.id}`}>
-                          {post.authorName || 'AstroMystic Team'}
+                          AstroMystic Team
                         </span>
                       </div>
                       <button className="text-primary hover:text-primary/80 transition-colors duration-200" data-testid={`button-read-post-${post.id}`}>
@@ -104,7 +104,7 @@ export default function Blog() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <i className="fas fa-newspaper text-4xl text-muted-foreground mb-4"></i>
+              <Newspaper className="h-16 w-16 text-muted-foreground mb-4 mx-auto" />
               <p className="text-muted-foreground mb-4">No blog posts available</p>
               <p className="text-sm text-muted-foreground">
                 Check back later for cosmic insights and astrological wisdom.

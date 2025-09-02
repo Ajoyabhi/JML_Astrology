@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
 import type { Horoscope } from "@shared/schema";
+import { Calendar } from "lucide-react";
 
 export default function Horoscope() {
   const [selectedSign, setSelectedSign] = useState<string>("aries");
@@ -108,7 +109,7 @@ export default function Horoscope() {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <i className="fas fa-calendar-alt text-4xl text-muted-foreground mb-4"></i>
+                  <Calendar className="h-16 w-16 text-muted-foreground mb-4 mx-auto" />
                   <p className="text-muted-foreground mb-4">
                     No horoscope available for {zodiacSigns.find(z => z.sign === selectedSign)?.name} ({activeType})
                   </p>

@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import type { Consultation, User } from "@shared/schema";
+import { TrendingUp, MessageCircle, Calculator, User as UserIcon, Calendar } from "lucide-react";
 
 export default function Home() {
   const { user } = useAuth();
@@ -33,7 +34,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
             <div className="glass-card rounded-xl p-6 text-center hover:scale-105 transition-all duration-300">
               <div className="w-16 h-16 bg-gradient-to-br from-primary to-gold-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-chart-line text-2xl text-cosmic-900"></i>
+                <TrendingUp className="h-8 w-8 text-cosmic-900" />
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-2">Today's Horoscope</h3>
               <p className="text-muted-foreground mb-4">Get your daily cosmic guidance</p>
@@ -47,7 +48,7 @@ export default function Home() {
 
             <div className="glass-card rounded-xl p-6 text-center hover:scale-105 transition-all duration-300">
               <div className="w-16 h-16 bg-gradient-to-br from-accent to-mystic-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-comments text-2xl text-foreground"></i>
+                <MessageCircle className="h-8 w-8 text-foreground" />
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-2">Quick Consultation</h3>
               <p className="text-muted-foreground mb-4">Chat with available astrologers</p>
@@ -61,7 +62,7 @@ export default function Home() {
 
             <div className="glass-card rounded-xl p-6 text-center hover:scale-105 transition-all duration-300">
               <div className="w-16 h-16 bg-gradient-to-br from-gold-400 to-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-calculator text-2xl text-cosmic-900"></i>
+                <Calculator className="h-8 w-8 text-cosmic-900" />
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-2">Birth Chart</h3>
               <p className="text-muted-foreground mb-4">Generate your complete natal chart</p>
@@ -83,12 +84,12 @@ export default function Home() {
                   <div key={consultation.id} className="flex items-center justify-between p-4 bg-muted/20 rounded-lg">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
-                        <i className="fas fa-user text-cosmic-900"></i>
+                        <UserIcon className="h-6 w-6 text-cosmic-900" />
                       </div>
                       <div>
                         <h4 className="font-semibold text-foreground">{consultation.type} Consultation</h4>
                         <p className="text-sm text-muted-foreground">
-                          {new Date(consultation.createdAt).toLocaleDateString()}
+                          {consultation.createdAt ? new Date(consultation.createdAt).toLocaleDateString() : 'Recent'}
                         </p>
                       </div>
                     </div>
@@ -104,7 +105,7 @@ export default function Home() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <i className="fas fa-calendar-alt text-4xl text-muted-foreground mb-4"></i>
+                <Calendar className="h-16 w-16 text-muted-foreground mb-4 mx-auto" />
                 <p className="text-muted-foreground">No consultations yet</p>
                 <button 
                   className="mt-4 px-6 py-2 bg-gradient-to-r from-primary to-gold-400 text-cosmic-900 rounded-lg font-medium hover:shadow-lg transition-all duration-200"
