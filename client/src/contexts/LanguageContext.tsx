@@ -235,27 +235,19 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   };
 
   const t = (key: string): string => {
-    const keys = key.split('.');
-    let value: any = translations[language];
-    
-    for (const k of keys) {
-      if (value && typeof value === 'object') {
-        value = value[k];
-      } else {
-        // Fallback to English if translation not found
-        value = translations.en;
-        for (const fallbackKey of keys) {
-          if (value && typeof value === 'object') {
-            value = value[fallbackKey];
-          } else {
-            return key; // Return key if no translation found
-          }
-        }
-        break;
-      }
+    const langTranslations = translations[language] as Record<string, string>;
+    if (langTranslations && langTranslations[key]) {
+      return langTranslations[key];
     }
     
-    return typeof value === 'string' ? value : key;
+    // Fallback to English
+    const englishTranslations = translations.en as Record<string, string>;
+    if (englishTranslations && englishTranslations[key]) {
+      return englishTranslations[key];
+    }
+    
+    // Return key if no translation found
+    return key;
   };
 
   return (
