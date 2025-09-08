@@ -2,10 +2,10 @@ import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import * as schema from "@shared/schema";
 
-if (process.env.NODE_ENV === 'production') {
-  const ws = require("ws");
-  neonConfig.webSocketConstructor = ws;
-}
+// if (process.env.NODE_ENV === 'production') {
+//   const ws = require("ws");
+//   neonConfig.webSocketConstructor = ws;
+// }
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
