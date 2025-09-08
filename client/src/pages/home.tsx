@@ -13,6 +13,11 @@ export default function Home() {
   
   const { data: consultations = [] } = useQuery<Consultation[]>({
     queryKey: ["/api/consultations"],
+    queryFn: async () => {
+      const response = await fetch('/api/consultations', { credentials: 'include' });
+      if (!response.ok) throw new Error('Failed to fetch consultations');
+      return response.json();
+    },
   });
 
   // Animation variants
