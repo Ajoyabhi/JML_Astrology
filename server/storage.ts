@@ -18,7 +18,7 @@ import {
   type Horoscope,
   type InsertHoroscope,
 } from "@shared/schema";
-import { db } from "./db";
+import { getDb } from "./db";
 import { eq, desc, and, like, or, sql } from "drizzle-orm";
 
 export interface IStorage {
@@ -57,11 +57,13 @@ export interface IStorage {
 export class DatabaseStorage implements IStorage {
   // User operations
   async getUser(id: string): Promise<User | undefined> {
+    const db = await getDb();
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
+    const db = await getDb();
     const [user] = await db
       .insert(users)
       .values(userData)
@@ -78,15 +80,18 @@ export class DatabaseStorage implements IStorage {
 
   // Astrologer operations
   async getAstrologers(): Promise<Astrologer[]> {
+    const db = await getDb();
     return await db.select().from(astrologers).orderBy(desc(astrologers.rating));
   }
 
   async getAstrologer(id: string): Promise<Astrologer | undefined> {
+    const db = await getDb();
     const [astrologer] = await db.select().from(astrologers).where(eq(astrologers.id, id));
     return astrologer;
   }
 
   async createAstrologer(astrologerData: InsertAstrologer): Promise<Astrologer> {
+    const db = await getDb();
     const [astrologer] = await db
       .insert(astrologers)
       .values(astrologerData)
@@ -95,6 +100,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateAstrologer(id: string, astrologerData: Partial<InsertAstrologer>): Promise<Astrologer> {
+    const db = await getDb();
     const [astrologer] = await db
       .update(astrologers)
       .set({ ...astrologerData, updatedAt: new Date() })
@@ -124,6 +130,7 @@ export class DatabaseStorage implements IStorage {
       conditions.push(sql`${language} = ANY(${astrologers.languages})`);
     }
 
+    const db = await getDb();
     return await db
       .select()
       .from(astrologers)
@@ -133,6 +140,7 @@ export class DatabaseStorage implements IStorage {
 
   // Consultation operations
   async getConsultations(userId: string): Promise<Consultation[]> {
+    const db = await getDb();
     return await db
       .select()
       .from(consultations)
@@ -141,11 +149,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getConsultation(id: string): Promise<Consultation | undefined> {
+    const db = await getDb();
     const [consultation] = await db.select().from(consultations).where(eq(consultations.id, id));
     return consultation;
   }
 
   async createConsultation(consultationData: InsertConsultation): Promise<Consultation> {
+    const db = await getDb();
     const [consultation] = await db
       .insert(consultations)
       .values(consultationData)
@@ -154,6 +164,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateConsultation(id: string, consultationData: Partial<InsertConsultation>): Promise<Consultation> {
+    const db = await getDb();
     const [consultation] = await db
       .update(consultations)
       .set({ ...consultationData, updatedAt: new Date() })
@@ -164,6 +175,7 @@ export class DatabaseStorage implements IStorage {
 
   // Review operations
   async getReviews(astrologerId: string): Promise<Review[]> {
+    const db = await getDb();
     return await db
       .select()
       .from(reviews)
@@ -172,6 +184,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createReview(reviewData: InsertReview): Promise<Review> {
+    const db = await getDb();
     const [review] = await db
       .insert(reviews)
       .values(reviewData)
@@ -195,6 +208,7 @@ export class DatabaseStorage implements IStorage {
 
   // Blog operations
   async getBlogPosts(): Promise<BlogPost[]> {
+    const db = await getDb();
     return await db
       .select()
       .from(blogPosts)
@@ -203,6 +217,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getBlogPost(slug: string): Promise<BlogPost | undefined> {
+    const db = await getDb();
     const [post] = await db
       .select()
       .from(blogPosts)
@@ -211,6 +226,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createBlogPost(postData: InsertBlogPost): Promise<BlogPost> {
+    const db = await getDb();
     const [post] = await db
       .insert(blogPosts)
       .values(postData)
@@ -228,6 +244,7 @@ export class DatabaseStorage implements IStorage {
     // Capitalize the zodiac sign to match the database format
     const capitalizedSign = zodiacSign.charAt(0).toUpperCase() + zodiacSign.slice(1).toLowerCase();
 
+    const db = await getDb();
     const [horoscope] = await db
       .select()
       .from(horoscopes)
@@ -243,6 +260,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createHoroscope(horoscopeData: InsertHoroscope): Promise<Horoscope> {
+    const db = await getDb();
     const [horoscope] = await db
       .insert(horoscopes)
       .values(horoscopeData)
@@ -251,6 +269,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getLatestHoroscopes(type: string): Promise<Horoscope[]> {
+    const db = await getDb();
     return await db
       .select()
       .from(horoscopes)
