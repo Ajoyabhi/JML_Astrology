@@ -6,6 +6,11 @@ import type { BlogPost } from "@shared/schema";
 export default function BlogSection() {
   const { data: posts = [], isLoading } = useQuery<BlogPost[]>({
     queryKey: ["/api/blog"],
+    queryFn: async () => {
+      const response = await fetch('/api/blog', { credentials: 'include' });
+      if (!response.ok) throw new Error('Failed to fetch blog posts');
+      return response.json();
+    },
   });
 
   // Show only first 3 posts for the landing page section
