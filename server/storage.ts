@@ -5,6 +5,12 @@ import {
   reviews,
   blogPosts,
   horoscopes,
+  serviceCategories,
+  services,
+  orders,
+  payments,
+  serviceDeliverables,
+  serviceReviews,
   type User,
   type UpsertUser,
   type Astrologer,
@@ -17,6 +23,18 @@ import {
   type InsertBlogPost,
   type Horoscope,
   type InsertHoroscope,
+  type ServiceCategory,
+  type InsertServiceCategory,
+  type Service,
+  type InsertService,
+  type Order,
+  type InsertOrder,
+  type Payment,
+  type InsertPayment,
+  type ServiceDeliverable,
+  type InsertServiceDeliverable,
+  type ServiceReview,
+  type InsertServiceReview,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, like, or, sql } from "drizzle-orm";
@@ -52,6 +70,30 @@ export interface IStorage {
   getHoroscope(zodiacSign: string, type: string, date: Date): Promise<Horoscope | undefined>;
   createHoroscope(horoscope: InsertHoroscope): Promise<Horoscope>;
   getLatestHoroscopes(type: string): Promise<Horoscope[]>;
+  
+  // Service operations
+  getServiceCategories(): Promise<ServiceCategory[]>;
+  getServices(filters: { categoryId?: string; search?: string; featured?: boolean }): Promise<Service[]>;
+  getService(id: string): Promise<Service | undefined>;
+  createService(service: InsertService): Promise<Service>;
+  
+  // Order operations
+  getOrders(userId: string): Promise<Order[]>;
+  getOrder(id: string, userId: string): Promise<Order | undefined>;
+  createOrder(order: InsertOrder): Promise<Order>;
+  updateOrderStatus(orderId: string, status: string, paymentStatus: string): Promise<Order>;
+  
+  // Payment operations
+  createPayment(payment: InsertPayment): Promise<Payment>;
+  updatePaymentStatus(paymentId: string, updates: { status: string; bankTransactionId: string; bankResponse: any }): Promise<Payment>;
+  getPayment(id: string, userId: string): Promise<Payment | undefined>;
+  
+  // Service deliverables operations
+  getServiceDeliverables(orderId: string): Promise<ServiceDeliverable[]>;
+  
+  // Service review operations
+  getServiceReviews(serviceId: string): Promise<ServiceReview[]>;
+  createServiceReview(review: InsertServiceReview): Promise<ServiceReview>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -257,6 +299,160 @@ export class DatabaseStorage implements IStorage {
       .where(eq(horoscopes.type, type))
       .orderBy(desc(horoscopes.date))
       .limit(12);
+  }
+
+  // =================== SERVICE OPERATIONS ===================
+
+  // Service categories
+  async getServiceCategories(): Promise<ServiceCategory[]> {
+    return await db
+      .select()
+      .from(serviceCategories)
+      .where(eq(serviceCategories.isActive, true))
+      .orderBy(serviceCategories.displayOrder, serviceCategories.name);
+  }
+
+  // Services
+  async getServices(filters: { categoryId?: string; search?: string; featured?: boolean }): Promise<Service[]> {
+    let conditions = [eq(services.isActive, true)];
+    
+    if (filters.categoryId) {
+      conditions.push(eq(services.categoryId, filters.categoryId));
+    }
+    
+    if (filters.search) {
+      conditions.push(
+        or(
+          like(services.name, `%${filters.search}%`),
+          like(services.description, `%${filters.search}%`),
+          sql`array_to_string(${services.tags}, ',') ILIKE ${'%' + filters.search + '%'}`
+        )!
+      );
+    }
+    
+    if (filters.featured) {
+      conditions.push(eq(services.isFeatured, true));
+    }
+
+    return await db
+      .select()
+      .from(services)
+      .where(and(...conditions))
+      .orderBy(desc(services.isFeatured), services.name);
+  }
+
+  async getService(id: string): Promise<Service | undefined> {
+    const [service] = await db
+      .select()
+      .from(services)
+      .where(and(eq(services.id, id), eq(services.isActive, true)));
+    return service;
+  }
+
+  async createService(serviceData: InsertService): Promise<Service> {
+    const [service] = await db
+      .insert(services)
+      .values(serviceData)
+      .returning();
+    return service;
+  }
+
+  // =================== ORDER OPERATIONS ===================
+
+  async getOrders(userId: string): Promise<Order[]> {
+    return await db
+      .select()
+      .from(orders)
+      .where(eq(orders.userId, userId))
+      .orderBy(desc(orders.createdAt));
+  }
+
+  async getOrder(id: string, userId: string): Promise<Order | undefined> {
+    const [order] = await db
+      .select()
+      .from(orders)
+      .where(and(eq(orders.id, id), eq(orders.userId, userId)));
+    return order;
+  }
+
+  async createOrder(orderData: InsertOrder): Promise<Order> {
+    const [order] = await db
+      .insert(orders)
+      .values(orderData)
+      .returning();
+    return order;
+  }
+
+  async updateOrderStatus(orderId: string, status: string, paymentStatus: string): Promise<Order> {
+    const [order] = await db
+      .update(orders)
+      .set({ 
+        status, 
+        paymentStatus,
+        updatedAt: new Date(),
+        ...(status === 'completed' ? { completedAt: new Date() } : {})
+      })
+      .where(eq(orders.id, orderId))
+      .returning();
+    return order;
+  }
+
+  // =================== PAYMENT OPERATIONS ===================
+
+  async createPayment(paymentData: InsertPayment): Promise<Payment> {
+    const [payment] = await db
+      .insert(payments)
+      .values(paymentData)
+      .returning();
+    return payment;
+  }
+
+  async updatePaymentStatus(paymentId: string, updates: { status: string; bankTransactionId: string; bankResponse: any }): Promise<Payment> {
+    const [payment] = await db
+      .update(payments)
+      .set({
+        ...updates,
+        updatedAt: new Date()
+      })
+      .where(eq(payments.id, paymentId))
+      .returning();
+    return payment;
+  }
+
+  async getPayment(id: string, userId: string): Promise<Payment | undefined> {
+    const [payment] = await db
+      .select()
+      .from(payments)
+      .where(and(eq(payments.id, id), eq(payments.userId, userId)));
+    return payment;
+  }
+
+  // =================== SERVICE DELIVERABLES OPERATIONS ===================
+
+  async getServiceDeliverables(orderId: string): Promise<ServiceDeliverable[]> {
+    return await db
+      .select()
+      .from(serviceDeliverables)
+      .where(eq(serviceDeliverables.orderId, orderId))
+      .orderBy(desc(serviceDeliverables.createdAt));
+  }
+
+  // =================== SERVICE REVIEW OPERATIONS ===================
+
+  async getServiceReviews(serviceId: string): Promise<ServiceReview[]> {
+    return await db
+      .select()
+      .from(serviceReviews)
+      .where(and(eq(serviceReviews.serviceId, serviceId), eq(serviceReviews.isPublic, true)))
+      .orderBy(desc(serviceReviews.createdAt));
+  }
+
+  async createServiceReview(reviewData: InsertServiceReview): Promise<ServiceReview> {
+    const [review] = await db
+      .insert(serviceReviews)
+      .values(reviewData)
+      .returning();
+    return review;
   }
 }
 
