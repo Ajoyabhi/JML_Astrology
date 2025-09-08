@@ -21,6 +21,17 @@ export default function Astrologers() {
 
   const { data: astrologers = [], isLoading } = useQuery<Astrologer[]>({
     queryKey: ["/api/astrologers", searchQuery, selectedSpecialization, selectedLanguage],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (searchQuery) params.append('search', searchQuery);
+      if (selectedSpecialization && selectedSpecialization !== 'all') params.append('specialization', selectedSpecialization);
+      if (selectedLanguage && selectedLanguage !== 'all') params.append('language', selectedLanguage);
+      
+      const url = `/api/astrologers${params.toString() ? `?${params.toString()}` : ''}`;
+      const response = await fetch(url, { credentials: 'include' });
+      if (!response.ok) throw new Error('Failed to fetch astrologers');
+      return response.json();
+    },
   });
 
   const handleBookConsultation = (astrologer: Astrologer, type: string) => {
