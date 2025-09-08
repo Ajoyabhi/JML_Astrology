@@ -10,6 +10,11 @@ import type { BlogPost } from "@shared/schema";
 export default function Blog() {
   const { data: posts = [], isLoading } = useQuery<BlogPost[]>({
     queryKey: ["/api/blog"],
+    queryFn: async () => {
+      const response = await fetch('/api/blog', { credentials: 'include' });
+      if (!response.ok) throw new Error('Failed to fetch blog posts');
+      return response.json();
+    },
   });
 
   return (
