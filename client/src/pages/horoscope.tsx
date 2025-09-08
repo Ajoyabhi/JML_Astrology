@@ -17,6 +17,28 @@ export default function Horoscope() {
   const { data: horoscope, isLoading } = useQuery<Horoscope>({
     queryKey: ["/api/horoscope", selectedSign, activeType],
     enabled: !!selectedSign && !!activeType,
+    queryFn: async () => {
+      // First try to get horoscope for today
+      let response = await fetch(`/api/horoscope/${selectedSign}/${activeType}`, { credentials: 'include' });
+      
+      // If not found, try to get the latest available horoscope
+      if (!response.ok) {
+        const horoscopesResponse = await fetch(`/api/horoscopes/${activeType}`, { credentials: 'include' });
+        if (!horoscopesResponse.ok) throw new Error('Failed to fetch horoscopes');
+        
+        const horoscopes = await horoscopesResponse.json();
+        const signHoroscope = horoscopes.find((h: any) => 
+          h.zodiacSign.toLowerCase() === selectedSign.toLowerCase()
+        );
+        
+        if (signHoroscope) {
+          return signHoroscope;
+        }
+        throw new Error('Horoscope not found');
+      }
+      
+      return response.json();
+    },
   });
 
   const zodiacSigns = [
