@@ -196,6 +196,127 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // =================== SERVICE ROUTES ===================
+
+  // Get all service categories
+  app.get("/api/service-categories", async (req, res) => {
+    try {
+      const categories = await storage.getServiceCategories();
+      res.json(categories);
+    } catch (error) {
+      console.error("Error fetching service categories:", error);
+      res.status(500).json({ message: "Failed to fetch service categories" });
+    }
+  });
+
+  // Get services with optional filters
+  app.get("/api/services", async (req, res) => {
+    try {
+      const { categoryId, search, featured } = req.query;
+      const filters = {
+        categoryId: categoryId as string,
+        search: search as string,
+        featured: featured === 'true'
+      };
+      
+      const services = await storage.getServices(filters);
+      res.json(services);
+    } catch (error) {
+      console.error("Error fetching services:", error);
+      res.status(500).json({ message: "Failed to fetch services" });
+    }
+  });
+
+  // Get specific service
+  app.get("/api/services/:id", async (req, res) => {
+    try {
+      const service = await storage.getService(req.params.id);
+      if (!service) {
+        return res.status(404).json({ message: "Service not found" });
+      }
+      res.json(service);
+    } catch (error) {
+      console.error("Error fetching service:", error);
+      res.status(500).json({ message: "Failed to fetch service" });
+    }
+  });
+
+  // Get service reviews
+  app.get("/api/services/:id/reviews", async (req, res) => {
+    try {
+      const reviews = await storage.getServiceReviews(req.params.id);
+      res.json(reviews);
+    } catch (error) {
+      console.error("Error fetching service reviews:", error);
+      res.status(500).json({ message: "Failed to fetch service reviews" });
+    }
+  });
+
+  // =================== ORDER ROUTES ===================
+
+  // Get user orders
+  app.get("/api/orders", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const orders = await storage.getOrders(userId);
+      res.json(orders);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  // Get specific order
+  app.get("/api/orders/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const order = await storage.getOrder(req.params.id, userId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      res.json(order);
+    } catch (error) {
+      console.error("Error fetching order:", error);
+      res.status(500).json({ message: "Failed to fetch order" });
+    }
+  });
+
+  // Create order (book service)
+  app.post("/api/orders", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Validate request body
+      const validatedData = insertOrderSchema.omit({ id: true, createdAt: true, updatedAt: true }).parse({
+        ...req.body,
+        userId,
+      });
+
+      const order = await storage.createOrder(validatedData);
+      res.status(201).json(order);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: error.errors 
+        });
+      }
+      console.error("Error creating order:", error);
+      res.status(500).json({ message: "Failed to create order" });
+    }
+  });
+
+  // Get order deliverables
+  app.get("/api/orders/:id/deliverables", isAuthenticated, async (req: any, res) => {
+    try {
+      const deliverables = await storage.getServiceDeliverables(req.params.id);
+      res.json(deliverables);
+    } catch (error) {
+      console.error("Error fetching order deliverables:", error);
+      res.status(500).json({ message: "Failed to fetch order deliverables" });
+    }
+  });
+
   // Calculator routes (mock calculations for now)
   app.post("/api/calculators/love-match", async (req, res) => {
     try {

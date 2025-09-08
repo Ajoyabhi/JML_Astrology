@@ -16,6 +16,7 @@ export default function Navigation() {
     { href: "/calculators", label: t('nav.calculators') },
     { href: "/horoscope", label: t('nav.horoscope') },
     { href: "/astrologers", label: t('nav.astrologers') },
+    { href: "/services", label: t('nav.services') },
     { href: "/blog", label: t('nav.blog') },
   ];
 
