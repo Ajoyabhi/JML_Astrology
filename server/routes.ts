@@ -7,7 +7,12 @@ import {
   insertConsultationSchema,
   insertReviewSchema,
   insertBlogPostSchema,
-  insertHoroscopeSchema 
+  insertHoroscopeSchema,
+  insertServiceCategorySchema,
+  insertServiceSchema,
+  insertOrderSchema,
+  insertPaymentSchema,
+  insertServiceReviewSchema 
 } from "@shared/schema";
 import { ZodError } from "zod";
 
@@ -255,6 +260,285 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error generating birth chart:", error);
       res.status(500).json({ message: "Failed to generate birth chart" });
     }
+  });
+
+  // =================== SERVICE MARKETPLACE ROUTES ===================
+
+  // Service Categories
+  app.get("/api/service-categories", async (req, res) => {
+    try {
+      const categories = await storage.getServiceCategories();
+      res.json(categories);
+    } catch (error) {
+      console.error("Error fetching service categories:", error);
+      res.status(500).json({ message: "Failed to fetch service categories" });
+    }
+  });
+
+  // Services - Public marketplace
+  app.get("/api/services", async (req, res) => {
+    try {
+      const { category, search, featured } = req.query;
+      const services = await storage.getServices({
+        categoryId: category as string,
+        search: search as string,
+        featured: featured === 'true'
+      });
+      res.json(services);
+    } catch (error) {
+      console.error("Error fetching services:", error);
+      res.status(500).json({ message: "Failed to fetch services" });
+    }
+  });
+
+  app.get("/api/services/:id", async (req, res) => {
+    try {
+      const service = await storage.getService(req.params.id);
+      if (!service) {
+        return res.status(404).json({ message: "Service not found" });
+      }
+      res.json(service);
+    } catch (error) {
+      console.error("Error fetching service:", error);
+      res.status(500).json({ message: "Failed to fetch service" });
+    }
+  });
+
+  // Orders - Protected routes
+  app.get("/api/orders", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const orders = await storage.getOrders(userId);
+      res.json(orders);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  app.get("/api/orders/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const order = await storage.getOrder(req.params.id, userId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      res.json(order);
+    } catch (error) {
+      console.error("Error fetching order:", error);
+      res.status(500).json({ message: "Failed to fetch order" });
+    }
+  });
+
+  app.post("/api/orders", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const orderData = insertOrderSchema.parse({
+        ...req.body,
+        userId,
+        orderNumber: `JML${Date.now()}` // Generate unique order number
+      });
+      
+      const order = await storage.createOrder(orderData);
+      res.status(201).json(order);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Invalid order data", errors: error.errors });
+      }
+      console.error("Error creating order:", error);
+      res.status(500).json({ message: "Failed to create order" });
+    }
+  });
+
+  // Payment Integration - Bank API endpoints
+  app.post("/api/payments/initiate", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { orderId, paymentMethod } = req.body;
+      
+      // Validate order belongs to user
+      const order = await storage.getOrder(orderId, userId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Create payment record
+      const paymentData = insertPaymentSchema.parse({
+        orderId,
+        userId,
+        amount: order.totalAmount,
+        currency: order.currency,
+        paymentMethod,
+        status: "pending"
+      });
+
+      const payment = await storage.createPayment(paymentData);
+
+      // TODO: Integrate with your bank's API here
+      // For now, we'll return payment initiation data
+      res.json({
+        paymentId: payment.id,
+        bankPaymentUrl: `/api/payments/mock-bank-redirect?paymentId=${payment.id}`,
+        qrCode: `upi://pay?pa=merchant@jmlastro&pn=JML Astro&am=${order.totalAmount}&cu=INR&tn=${order.orderNumber}`,
+        message: "Payment initiated successfully"
+      });
+
+    } catch (error) {
+      console.error("Error initiating payment:", error);
+      res.status(500).json({ message: "Failed to initiate payment" });
+    }
+  });
+
+  app.post("/api/payments/webhook", async (req, res) => {
+    try {
+      // This will handle webhook from your bank's API
+      const { paymentId, status, bankTransactionId, bankResponse } = req.body;
+      
+      // Verify webhook signature here (implement based on your bank's requirements)
+      
+      const result = await storage.updatePaymentStatus(paymentId, {
+        status,
+        bankTransactionId,
+        bankResponse
+      });
+
+      if (status === "success") {
+        // Update order status
+        await storage.updateOrderStatus(result.orderId, "confirmed", "completed");
+      }
+
+      res.json({ message: "Webhook processed successfully" });
+    } catch (error) {
+      console.error("Error processing payment webhook:", error);
+      res.status(500).json({ message: "Failed to process webhook" });
+    }
+  });
+
+  app.get("/api/payments/status/:paymentId", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const payment = await storage.getPayment(req.params.paymentId, userId);
+      
+      if (!payment) {
+        return res.status(404).json({ message: "Payment not found" });
+      }
+
+      res.json({
+        status: payment.status,
+        amount: payment.amount,
+        paymentMethod: payment.paymentMethod,
+        createdAt: payment.createdAt
+      });
+    } catch (error) {
+      console.error("Error fetching payment status:", error);
+      res.status(500).json({ message: "Failed to fetch payment status" });
+    }
+  });
+
+  // Service Reviews
+  app.get("/api/services/:id/reviews", async (req, res) => {
+    try {
+      const reviews = await storage.getServiceReviews(req.params.id);
+      res.json(reviews);
+    } catch (error) {
+      console.error("Error fetching service reviews:", error);
+      res.status(500).json({ message: "Failed to fetch service reviews" });
+    }
+  });
+
+  app.post("/api/service-reviews", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const reviewData = insertServiceReviewSchema.parse({
+        ...req.body,
+        userId
+      });
+      
+      const review = await storage.createServiceReview(reviewData);
+      res.status(201).json(review);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Invalid review data", errors: error.errors });
+      }
+      console.error("Error creating service review:", error);
+      res.status(500).json({ message: "Failed to create service review" });
+    }
+  });
+
+  // Service Deliverables
+  app.get("/api/orders/:orderId/deliverables", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Verify order belongs to user
+      const order = await storage.getOrder(req.params.orderId, userId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      const deliverables = await storage.getServiceDeliverables(req.params.orderId);
+      res.json(deliverables);
+    } catch (error) {
+      console.error("Error fetching deliverables:", error);
+      res.status(500).json({ message: "Failed to fetch deliverables" });
+    }
+  });
+
+  // Admin/Astrologer routes (for service management)
+  app.post("/api/admin/services", isAuthenticated, async (req: any, res) => {
+    try {
+      // TODO: Add admin/astrologer role check
+      const serviceData = insertServiceSchema.parse(req.body);
+      const service = await storage.createService(serviceData);
+      res.status(201).json(service);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Invalid service data", errors: error.errors });
+      }
+      console.error("Error creating service:", error);
+      res.status(500).json({ message: "Failed to create service" });
+    }
+  });
+
+  // Mock bank redirect for development
+  app.get("/api/payments/mock-bank-redirect", async (req, res) => {
+    const { paymentId } = req.query;
+    
+    // Simulate bank redirect page
+    res.send(`
+      <html>
+        <head><title>Mock Bank Payment</title></head>
+        <body style="font-family: Arial; max-width: 500px; margin: 50px auto; padding: 20px;">
+          <h2>Mock Bank Payment</h2>
+          <p><strong>Payment ID:</strong> ${paymentId}</p>
+          <div style="margin: 20px 0;">
+            <button onclick="processPayment('success')" style="background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px;">
+              Simulate Success
+            </button>
+            <button onclick="processPayment('failed')" style="background: #f44336; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px;">
+              Simulate Failure
+            </button>
+          </div>
+          <script>
+            function processPayment(status) {
+              fetch('/api/payments/webhook', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  paymentId: '${paymentId}',
+                  status: status,
+                  bankTransactionId: 'TXN' + Date.now(),
+                  bankResponse: { mockResponse: true, status: status }
+                })
+              }).then(() => {
+                alert('Payment ' + status + '! Redirecting back to app...');
+                window.location.href = '/orders';
+              });
+            }
+          </script>
+        </body>
+      </html>
+    `);
   });
 
   const httpServer = createServer(app);
