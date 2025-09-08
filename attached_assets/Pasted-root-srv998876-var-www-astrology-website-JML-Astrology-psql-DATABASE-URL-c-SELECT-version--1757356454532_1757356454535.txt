@@ -1,0 +1,43 @@
+root@srv998876:/var/www/astrology_website/JML_Astrology# psql $DATABASE_URL -c "SELECT version();"
+                                                                version                                                                 
+----------------------------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 16.10 (Ubuntu 16.10-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0, 64-bit
+(1 row)
+
+root@srv998876:/var/www/astrology_website/JML_Astrology# pg_isready -h localhost -p 5432
+localhost:5432 - accepting connections
+root@srv998876:/var/www/astrology_website/JML_Astrology# npm run db:push
+
+> rest-express@1.0.0 db:push
+> drizzle-kit push
+
+No config path provided, using default 'drizzle.config.ts'
+Reading config file '/var/www/astrology_website/JML_Astrology/drizzle.config.ts'
+Using 'pg' driver for database querying
+[✓] Pulling schema from database...
+error: permission denied for schema public
+    at /var/www/astrology_website/JML_Astrology/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.query (/var/www/astrology_website/JML_Astrology/node_modules/drizzle-kit/bin.cjs:66575:26)
+    at async pgPush (/var/www/astrology_website/JML_Astrology/node_modules/drizzle-kit/bin.cjs:70117:13)
+    at async Object.handler (/var/www/astrology_website/JML_Astrology/node_modules/drizzle-kit/bin.cjs:79124:9)
+    at async run (/var/www/astrology_website/JML_Astrology/node_modules/drizzle-kit/bin.cjs:78381:7) {
+  length: 99,
+  severity: 'ERROR',
+  code: '42501',
+  detail: undefined,
+  hint: undefined,
+  position: '14',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'aclchk.c',
+  line: '2812',
+  routine: 'aclcheck_error'
+}
+root@srv998876:/var/www/astrology_website/JML_Astrology# 
