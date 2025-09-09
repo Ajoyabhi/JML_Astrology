@@ -19,6 +19,9 @@ const translations = {
     'nav.astrologers': 'Best Astrologers',
     'nav.services': 'Services',
     'nav.blog': 'Blog',
+    'nav.login': 'Login',
+    'nav.logout': 'Logout',
+    'nav.signup': 'Sign Up',
     
     // Home Page
     'home.welcome': 'Welcome back,',
@@ -103,6 +106,9 @@ const translations = {
     'nav.astrologers': 'बेस्ट ज्योतिषी',
     'nav.services': 'सेवाएं',
     'nav.blog': 'ब्लॉग',
+    'nav.login': 'लॉगिन',
+    'nav.logout': 'लॉगआउट',
+    'nav.signup': 'साइन अप',
     
     // Home Page
     'home.welcome': 'वापस आपका स्वागत है,',
