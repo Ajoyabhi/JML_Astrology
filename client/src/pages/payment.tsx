@@ -10,14 +10,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
-import { Lock, CreditCard, Shield, CheckCircle, ArrowLeft, IndianRupee } from "lucide-react";
+import { Lock, CreditCard, Shield, CheckCircle, ArrowLeft, IndianRupee, Smartphone, QrCode, Copy, Phone } from "lucide-react";
 
 interface PaymentFormData {
+  // Card payment fields
   cardNumber: string;
   expiryMonth: string;
   expiryYear: string;
   cvv: string;
   cardholderName: string;
+  
+  // UPI payment fields
+  upiId: string;
+  upiPhone: string;
+  
+  // Common fields
+  paymentMethod: 'card' | 'upi';
   email: string;
   phone: string;
   billingAddress: string;
@@ -31,8 +39,14 @@ export default function Payment() {
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderData, setOrderData] = useState<any>(null);
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'upi'>('card');
+  const [showQR, setShowQR] = useState(false);
 
-  const { register, handleSubmit, formState: { errors }, watch } = useForm<PaymentFormData>();
+  const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<PaymentFormData>({
+    defaultValues: {
+      paymentMethod: 'card'
+    }
+  });
 
   useEffect(() => {
     // Get booking data from sessionStorage
@@ -50,18 +64,36 @@ export default function Payment() {
 
     try {
       const bookingData = JSON.parse(bookingDataString);
-      setOrderData({
-        serviceName: "Astrology Consultation",
-        astrologerName: bookingData.astrologerName,
-        duration: `${bookingData.duration} minutes`,
-        consultationType: bookingData.consultationType.charAt(0).toUpperCase() + bookingData.consultationType.slice(1),
-        amount: bookingData.totalPrice,
-        currency: "INR",
-        orderId: "JML" + Date.now(),
-        topic: bookingData.topic,
-        specialization: bookingData.specialization,
-        pricePerMinute: bookingData.pricePerMinute
-      });
+      
+      // Handle different booking types
+      if (bookingData.bookingType === 'service') {
+        // Service booking
+        setOrderData({
+          serviceName: bookingData.serviceName,
+          description: bookingData.shortDescription,
+          amount: bookingData.price,
+          currency: bookingData.currency,
+          orderId: bookingData.orderId,
+          deliveryTime: bookingData.deliveryTime,
+          tags: bookingData.tags,
+          bookingType: 'service'
+        });
+      } else {
+        // Consultation booking (default)
+        setOrderData({
+          serviceName: "Astrology Consultation",
+          astrologerName: bookingData.astrologerName,
+          duration: `${bookingData.duration} minutes`,
+          consultationType: bookingData.consultationType?.charAt(0).toUpperCase() + bookingData.consultationType?.slice(1),
+          amount: bookingData.totalPrice,
+          currency: "INR",
+          orderId: "JML" + Date.now(),
+          topic: bookingData.topic,
+          specialization: bookingData.specialization,
+          pricePerMinute: bookingData.pricePerMinute,
+          bookingType: 'consultation'
+        });
+      }
     } catch (error) {
       console.error('Error parsing booking data:', error);
       toast({
@@ -76,6 +108,9 @@ export default function Payment() {
   const onSubmit = async (data: PaymentFormData) => {
     setIsProcessing(true);
     
+    // Set the payment method in form data
+    data.paymentMethod = paymentMethod;
+    
     // Simulate payment processing
     await new Promise(resolve => setTimeout(resolve, 3000));
     
@@ -83,9 +118,13 @@ export default function Payment() {
     console.log("Payment data:", data);
     console.log("Order data:", orderData);
     
+    const processingMessage = paymentMethod === 'upi' 
+      ? "Your UPI payment is being processed..."
+      : "Your card payment is being processed...";
+      
     toast({
       title: "Payment Processing",
-      description: "Your payment is being processed. Please wait...",
+      description: processingMessage,
     });
     
     // Store successful payment data for success page
@@ -98,12 +137,44 @@ export default function Payment() {
       // Clear the pending booking since payment is complete
       sessionStorage.removeItem('pendingBooking');
       
+      const successMessage = orderData.bookingType === 'service'
+        ? "Your service has been booked successfully."
+        : "Your consultation has been booked successfully.";
+      
       toast({
         title: "Payment Successful!",
-        description: "Your consultation has been booked successfully.",
+        description: successMessage,
       });
       navigate("/payment/success");
     }, 2000);
+  };
+  
+  const handlePaymentMethodChange = (method: 'card' | 'upi') => {
+    setPaymentMethod(method);
+    setValue('paymentMethod', method);
+    setShowQR(false);
+  };
+  
+  const generateUPIString = () => {
+    if (!orderData) return '';
+    return `upi://pay?pa=merchant@jmlastro&pn=JML Astro&am=${orderData.amount}&cu=INR&tn=${orderData.orderId}`;
+  };
+  
+  const copyUPIString = async () => {
+    try {
+      await navigator.clipboard.writeText(generateUPIString());
+      toast({
+        title: "UPI String Copied!",
+        description: "Open any UPI app and paste to make payment.",
+      });
+    } catch (error) {
+      console.error('Failed to copy UPI string:', error);
+      toast({
+        title: "Copy Failed",
+        description: "Please manually copy the UPI payment string.",
+        variant: "destructive"
+      });
+    }
   };
 
   const formatPrice = (price: number, currency: string) => {
@@ -132,7 +203,7 @@ export default function Payment() {
           <div className="mb-8">
             <Button 
               variant="ghost" 
-              onClick={() => navigate(-1)}
+              onClick={() => window.history.back()}
               className="mb-4 text-muted-foreground hover:text-primary"
               data-testid="button-back"
             >
@@ -165,9 +236,60 @@ export default function Payment() {
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                    {/* Card Information */}
+                    {/* Payment Method Selection */}
                     <div className="space-y-4">
-                      <h3 className="font-semibold text-foreground mb-4">Card Information</h3>
+                      <h3 className="text-lg font-semibold text-foreground mb-4">Select Payment Method</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        {/* Card Payment Option */}
+                        <div 
+                          onClick={() => handlePaymentMethodChange('card')}
+                          className={`cursor-pointer p-4 border-2 rounded-lg transition-all duration-200 ${
+                            paymentMethod === 'card' 
+                              ? 'border-primary bg-primary/5 shadow-md' 
+                              : 'border-border hover:border-primary/50'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <CreditCard className={`h-6 w-6 ${
+                              paymentMethod === 'card' ? 'text-primary' : 'text-muted-foreground'
+                            }`} />
+                            <div>
+                              <h4 className={`font-semibold ${
+                                paymentMethod === 'card' ? 'text-primary' : 'text-foreground'
+                              }`}>Credit/Debit Card</h4>
+                              <p className="text-sm text-muted-foreground">Visa, MasterCard, Rupay</p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* UPI Payment Option */}
+                        <div 
+                          onClick={() => handlePaymentMethodChange('upi')}
+                          className={`cursor-pointer p-4 border-2 rounded-lg transition-all duration-200 ${
+                            paymentMethod === 'upi' 
+                              ? 'border-accent bg-accent/5 shadow-md' 
+                              : 'border-border hover:border-accent/50'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <Smartphone className={`h-6 w-6 ${
+                              paymentMethod === 'upi' ? 'text-accent' : 'text-muted-foreground'
+                            }`} />
+                            <div>
+                              <h4 className={`font-semibold ${
+                                paymentMethod === 'upi' ? 'text-accent' : 'text-foreground'
+                              }`}>UPI Payment</h4>
+                              <p className="text-sm text-muted-foreground">PhonePe, GPay, Paytm, BHIM</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Card Payment Form */}
+                    {paymentMethod === 'card' && (
+                      <div className="space-y-4">
+                        <h3 className="font-semibold text-foreground mb-4">Card Information</h3>
                       
                       <div>
                         <Label htmlFor="cardNumber">Card Number</Label>
@@ -258,7 +380,83 @@ export default function Payment() {
                           <p className="text-red-400 text-sm mt-1">{errors.cardholderName.message}</p>
                         )}
                       </div>
-                    </div>
+                      </div>
+                    )}
+                    
+                    {/* UPI Payment Form */}
+                    {paymentMethod === 'upi' && (
+                      <div className="space-y-4">
+                        <h3 className="font-semibold text-foreground mb-4">UPI Payment</h3>
+                        
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {/* UPI ID Payment */}
+                            <div className="p-4 border border-border rounded-lg">
+                              <div className="flex items-center gap-2 mb-3">
+                                <Phone className="h-4 w-4 text-accent" />
+                                <h4 className="font-semibold">Pay with UPI ID</h4>
+                              </div>
+                              <div>
+                                <Label htmlFor="upiId">UPI ID</Label>
+                                <Input
+                                  id="upiId"
+                                  type="text"
+                                  placeholder="yourname@paytm"
+                                  className="bg-input border-border"
+                                  {...register("upiId", { 
+                                    required: paymentMethod === 'upi' && !showQR ? "UPI ID is required" : false,
+                                    pattern: {
+                                      value: /^[a-zA-Z0-9.\-_]+@[a-zA-Z0-9.-]+$/,
+                                      message: "Please enter a valid UPI ID"
+                                    }
+                                  })}
+                                />
+                                {errors.upiId && (
+                                  <p className="text-red-400 text-sm mt-1">{errors.upiId.message}</p>
+                                )}
+                              </div>
+                            </div>
+                            
+                            {/* QR Code Payment */}
+                            <div className="p-4 border border-border rounded-lg">
+                              <div className="flex items-center gap-2 mb-3">
+                                <QrCode className="h-4 w-4 text-accent" />
+                                <h4 className="font-semibold">Pay with QR Code</h4>
+                              </div>
+                              <div className="text-center">
+                                <Button
+                                  type="button"
+                                  onClick={() => setShowQR(!showQR)}
+                                  className="bg-accent hover:bg-accent/80 text-white w-full mb-2"
+                                >
+                                  {showQR ? 'Hide QR Code' : 'Show QR Code'}
+                                </Button>
+                                {showQR && (
+                                  <div className="bg-white p-4 rounded-lg border">
+                                    <div className="w-32 h-32 mx-auto bg-gray-200 rounded-lg flex items-center justify-center mb-2">
+                                      <QrCode className="h-16 w-16 text-gray-400" />
+                                    </div>
+                                    <p className="text-xs text-gray-600 mb-2">Scan with any UPI app</p>
+                                    <div className="text-xs bg-gray-50 p-2 rounded break-all">
+                                      {generateUPIString()}
+                                    </div>
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      onClick={copyUPIString}
+                                      className="mt-2 w-full"
+                                    >
+                                      <Copy className="h-3 w-3 mr-1" />
+                                      Copy UPI String
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     <Separator />
 
