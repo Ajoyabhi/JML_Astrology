@@ -213,6 +213,7 @@ export default function Signup() {
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   className="bg-muted/20 border-primary/30 focus:border-primary"
                   data-testid="input-email"
+                  required
                 />
               </div>
 
