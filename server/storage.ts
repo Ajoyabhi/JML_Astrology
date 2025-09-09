@@ -245,6 +245,8 @@ export class DatabaseStorage implements IStorage {
     const capitalizedSign = zodiacSign.charAt(0).toUpperCase() + zodiacSign.slice(1).toLowerCase();
 
     const db = await getDb();
+    
+    // First try to get horoscope for the specific date
     const [horoscope] = await db
       .select()
       .from(horoscopes)
@@ -256,6 +258,24 @@ export class DatabaseStorage implements IStorage {
           sql`${horoscopes.date} <= ${endOfDay}`
         )
       );
+    
+    // If no horoscope found for the specific date, get the latest available one
+    if (!horoscope) {
+      const [latestHoroscope] = await db
+        .select()
+        .from(horoscopes)
+        .where(
+          and(
+            eq(horoscopes.zodiacSign, capitalizedSign),
+            eq(horoscopes.type, type)
+          )
+        )
+        .orderBy(desc(horoscopes.date))
+        .limit(1);
+      
+      return latestHoroscope;
+    }
+    
     return horoscope;
   }
 
