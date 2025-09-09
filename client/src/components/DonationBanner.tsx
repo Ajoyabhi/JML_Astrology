@@ -1,26 +1,42 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { X, Heart, Sparkles, Star, Gift } from "lucide-react";
+import { Heart, Sparkles, Star, Gift } from "lucide-react";
+import { useLocation } from "wouter";
 
 export default function DonationBanner() {
-  const [isVisible, setIsVisible] = useState(true);
+  const [, navigate] = useLocation();
 
-  if (!isVisible) return null;
+  const handleDonateClick = () => {
+    // Store donation data for payment page
+    const donationData = {
+      serviceId: "donation",
+      serviceName: "Support JMLAstro",
+      description: "Help us spread astrology wisdom to more souls around the universe!",
+      shortDescription: "Cosmic Mission Support",
+      price: 500, // Default amount, user can change on payment page
+      currency: "INR",
+      deliveryTime: "Instant",
+      tags: ["donation", "support"],
+      isFeatured: true,
+      bookingType: "donation",
+      orderId: "DONATE" + Date.now()
+    };
+    
+    sessionStorage.setItem('pendingBooking', JSON.stringify(donationData));
+    navigate('/payment');
+  };
 
   return (
-    <AnimatePresence>
       <motion.div
         initial={{ opacity: 0, y: -100, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -100, scale: 0.95 }}
         transition={{ 
           duration: 0.8, 
           ease: "easeOut",
           type: "spring",
           bounce: 0.3
         }}
-        className="relative overflow-hidden"
+        className="relative overflow-hidden sticky top-16 z-40"
       >
         {/* Animated background gradient */}
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 animate-gradient-x"></div>
@@ -126,6 +142,7 @@ export default function DonationBanner() {
               >
                 <Button 
                   size="sm"
+                  onClick={handleDonateClick}
                   className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105 font-medium shadow-lg"
                   variant="outline"
                   data-testid="button-donate"
@@ -135,18 +152,6 @@ export default function DonationBanner() {
                 </Button>
               </motion.div>
               
-              <motion.button
-                initial={{ opacity: 0, rotate: -90 }}
-                animate={{ opacity: 1, rotate: 0 }}
-                transition={{ delay: 0.9, duration: 0.4 }}
-                whileHover={{ scale: 1.1, rotate: 90 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setIsVisible(false)}
-                className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-all duration-200 backdrop-blur-sm"
-                data-testid="button-close-banner"
-              >
-                <X className="h-4 w-4 text-white" />
-              </motion.button>
             </div>
           </div>
         </div>
@@ -164,6 +169,5 @@ export default function DonationBanner() {
           }}
         />
       </motion.div>
-    </AnimatePresence>
   );
 }
