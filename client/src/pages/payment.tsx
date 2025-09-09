@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
-import { Lock, CreditCard, Shield, CheckCircle, ArrowLeft, IndianRupee, Smartphone, QrCode, Copy, Phone } from "lucide-react";
+import { Lock, CreditCard, Shield, CheckCircle, ArrowLeft, IndianRupee, Smartphone, QrCode, Copy, Phone, Heart, DollarSign } from "lucide-react";
 
 interface PaymentFormData {
   // Card payment fields
@@ -32,6 +32,9 @@ interface PaymentFormData {
   city: string;
   state: string;
   pincode: string;
+  
+  // Donation fields
+  donationAmount?: number;
 }
 
 export default function Payment() {
@@ -41,6 +44,8 @@ export default function Payment() {
   const [orderData, setOrderData] = useState<any>(null);
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'upi'>('card');
   const [showQR, setShowQR] = useState(false);
+  const [customAmount, setCustomAmount] = useState<string>('');
+  const [selectedAmount, setSelectedAmount] = useState<number>(500);
 
   const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<PaymentFormData>({
     defaultValues: {
@@ -290,6 +295,83 @@ export default function Payment() {
                         </div>
                       </div>
                     </div>
+                    
+                    {/* Donation Amount Selection - Only for donation bookings */}
+                    {orderData.bookingType === 'donation' && (
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                          <Heart className="h-5 w-5 text-primary" />
+                          Choose Donation Amount
+                        </h3>
+                        
+                        {/* Preset Amount Options */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                          {[100, 500, 1000, 2000].map((amount) => (
+                            <Button
+                              key={amount}
+                              type="button"
+                              variant={selectedAmount === amount ? "default" : "outline"}
+                              onClick={() => {
+                                setSelectedAmount(amount);
+                                setCustomAmount('');
+                                setOrderData(prev => prev ? { ...prev, amount } : prev);
+                              }}
+                              className={`h-16 flex-col space-y-1 transition-all duration-200 ${
+                                selectedAmount === amount 
+                                  ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg scale-105' 
+                                  : 'border-border hover:border-primary/50 hover:bg-primary/5'
+                              }`}
+                              data-testid={`button-amount-${amount}`}
+                            >
+                              <DollarSign className="h-4 w-4" />
+                              <span className="font-semibold">₹{amount}</span>
+                            </Button>
+                          ))}
+                        </div>
+                        
+                        {/* Custom Amount Input */}
+                        <div className="space-y-2">
+                          <Label htmlFor="customAmount" className="text-sm font-medium">Or Enter Custom Amount</Label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">₹</span>
+                            <Input
+                              id="customAmount"
+                              type="number"
+                              min="1"
+                              max="100000"
+                              placeholder="Enter custom amount"
+                              value={customAmount}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                setCustomAmount(value);
+                                const numValue = parseInt(value) || 0;
+                                if (numValue > 0) {
+                                  setSelectedAmount(numValue);
+                                  setOrderData(prev => prev ? { ...prev, amount: numValue } : prev);
+                                }
+                              }}
+                              className="pl-8 bg-input border-border focus:border-primary"
+                              data-testid="input-custom-amount"
+                            />
+                          </div>
+                          {customAmount && parseInt(customAmount) > 0 && (
+                            <p className="text-sm text-primary font-medium">
+                              ✨ Thank you for your generous donation of ₹{parseInt(customAmount).toLocaleString('en-IN')}!
+                            </p>
+                          )}
+                        </div>
+                        
+                        <div className="p-4 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <Heart className="h-5 w-5 text-primary" />
+                            <div>
+                              <p className="text-sm font-medium text-foreground">Your Support Matters</p>
+                              <p className="text-xs text-muted-foreground">Every donation helps us provide better astrology services to more people</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     
                     {/* Card Payment Form */}
                     {paymentMethod === 'card' && (
