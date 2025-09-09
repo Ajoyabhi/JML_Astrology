@@ -588,12 +588,16 @@ export default function Payment() {
                       {isProcessing ? (
                         <>
                           <div className="w-4 h-4 border-2 border-cosmic-900/30 border-t-cosmic-900 rounded-full animate-spin mr-2" />
-                          Processing Payment...
+                          Processing {paymentMethod === 'upi' ? 'UPI' : 'Card'} Payment...
                         </>
                       ) : (
                         <>
-                          <Lock className="w-5 h-5 mr-2" />
-                          Pay {formatPrice(orderData.amount, orderData.currency)}
+                          {paymentMethod === 'upi' ? (
+                            <Smartphone className="w-5 h-5 mr-2" />
+                          ) : (
+                            <Lock className="w-5 h-5 mr-2" />
+                          )}
+                          Pay {formatPrice(orderData.amount, orderData.currency)} via {paymentMethod === 'upi' ? 'UPI' : 'Card'}
                         </>
                       )}
                     </Button>
@@ -613,18 +617,37 @@ export default function Payment() {
                     <div className="space-y-3">
                       <div>
                         <h4 className="font-semibold text-foreground">{orderData.serviceName}</h4>
-                        <p className="text-sm text-muted-foreground">with {orderData.astrologerName}</p>
+                        {orderData.bookingType === 'consultation' ? (
+                          <p className="text-sm text-muted-foreground">with {orderData.astrologerName}</p>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">{orderData.description}</p>
+                        )}
                       </div>
                       
                       <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Duration:</span>
-                          <span>{orderData.duration}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Type:</span>
-                          <span>{orderData.consultationType}</span>
-                        </div>
+                        {orderData.bookingType === 'consultation' ? (
+                          <>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Duration:</span>
+                              <span>{orderData.duration}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Type:</span>
+                              <span>{orderData.consultationType}</span>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Delivery:</span>
+                              <span>{orderData.deliveryTime}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Service Type:</span>
+                              <span>Digital Service</span>
+                            </div>
+                          </>
+                        )}
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Order ID:</span>
                           <span className="font-mono text-xs">{orderData.orderId}</span>
