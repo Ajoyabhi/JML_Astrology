@@ -79,7 +79,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Consultation routes
   app.get("/api/consultations", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const consultations = await storage.getConsultations(userId);
       res.json(consultations);
     } catch (error) {
@@ -90,7 +90,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/consultations", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const consultationData = insertConsultationSchema.parse({
         ...req.body,
         userId
@@ -119,7 +119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/reviews", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const reviewData = insertReviewSchema.parse({
         ...req.body,
         userId
@@ -247,7 +247,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user orders
   app.get("/api/orders", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orders = await storage.getOrders(userId);
       res.json(orders);
     } catch (error) {
@@ -259,7 +259,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get specific order
   app.get("/api/orders/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const order = await storage.getOrder(req.params.id, userId);
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
@@ -274,7 +274,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create order (book service)
   app.post("/api/orders", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       
       // Validate request body
       const validatedData = insertOrderSchema.omit({ id: true, createdAt: true, updatedAt: true }).parse({
@@ -418,7 +418,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Orders - Protected routes
   app.get("/api/orders", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orders = await storage.getOrders(userId);
       res.json(orders);
     } catch (error) {
@@ -429,7 +429,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/orders/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const order = await storage.getOrder(req.params.id, userId);
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
@@ -443,7 +443,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/orders", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orderData = insertOrderSchema.parse({
         ...req.body,
         userId,
@@ -464,7 +464,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Payment Integration - Bank API endpoints
   app.post("/api/payments/initiate", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { orderId, paymentMethod } = req.body;
       
       // Validate order belongs to user
@@ -527,7 +527,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/payments/status/:paymentId", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const payment = await storage.getPayment(req.params.paymentId, userId);
       
       if (!payment) {
@@ -559,7 +559,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/service-reviews", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const reviewData = insertServiceReviewSchema.parse({
         ...req.body,
         userId
@@ -579,7 +579,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Service Deliverables
   app.get("/api/orders/:orderId/deliverables", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       
       // Verify order belongs to user
       const order = await storage.getOrder(req.params.orderId, userId);

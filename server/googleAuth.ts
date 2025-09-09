@@ -180,16 +180,21 @@ export function setupAuth(app: Express) {
     }
   );
 
-  app.post("/api/auth/logout", (req, res, next) => {
-    req.logout((err) => {
+  // Handle both POST and GET logout requests
+  const handleLogout = (req: any, res: any, next: any) => {
+    req.logout((err: any) => {
       if (err) return next(err);
-      req.session.destroy((err) => {
+      req.session.destroy((err: any) => {
         if (err) return next(err);
         res.clearCookie('connect.sid');
-        res.sendStatus(200);
+        // Redirect to home page after logout
+        res.redirect('/');
       });
     });
-  });
+  };
+
+  app.post("/api/auth/logout", handleLogout);
+  app.get("/api/logout", handleLogout);
 
   app.get("/api/auth/user", (req, res) => {
     if (!req.isAuthenticated()) {
@@ -200,7 +205,7 @@ export function setupAuth(app: Express) {
 }
 
 export const isAuthenticated = (req: any, res: any, next: any) => {
-  if (req.isAuthenticated()) {
+  if (req.isAuthenticated() && req.user) {
     return next();
   }
   res.status(401).json({ message: "Unauthorized" });
