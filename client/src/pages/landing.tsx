@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import DonationBanner from "@/components/DonationBanner";
 import HeroSection from "@/components/HeroSection";
 import CalculatorsSection from "@/components/CalculatorsSection";
 import AstrologersSection from "@/components/AstrologersSection";
@@ -9,6 +10,7 @@ export default function Landing() {
   return (
     <div className="min-h-screen">
       <Navigation />
+      <DonationBanner />
       <HeroSection />
       <CalculatorsSection />
       <section className="py-20 bg-card/30">

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useLocation } from 'wouter';
 import { Star, Clock, IndianRupee, Filter, Search, ShoppingCart } from 'lucide-react';
 import Navigation from '@/components/Navigation';
+import DonationBanner from '@/components/DonationBanner';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -83,6 +84,7 @@ export default function Services() {
   return (
     <div className="min-h-screen">
       <Navigation />
+      <DonationBanner />
       
       <main className="pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

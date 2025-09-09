@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import DonationBanner from "@/components/DonationBanner";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
@@ -74,6 +75,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <Navigation />
+      <DonationBanner />
       
       <main className="pt-20 pb-16 overflow-hidden">
         <motion.div 

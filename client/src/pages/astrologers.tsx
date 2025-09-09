@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Navigation from "@/components/Navigation";
+import DonationBanner from "@/components/DonationBanner";
 import Footer from "@/components/Footer";
 import BookingModal from "@/components/BookingModal";
 import { Card, CardContent } from "@/components/ui/card";
@@ -42,6 +43,7 @@ export default function Astrologers() {
   return (
     <div className="min-h-screen">
       <Navigation />
+      <DonationBanner />
       
       <main className="pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
