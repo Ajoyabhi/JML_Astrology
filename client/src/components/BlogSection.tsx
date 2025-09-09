@@ -56,7 +56,7 @@ export default function BlogSection() {
                 data-testid={`featured-article-${post.id}`}
               >
                 <img
-                  src={post.featuredImageUrl || "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300"}
+                  src={post.featuredImageUrl || "https://images.unsplash.com/photo-1444927714506-8492d94b5ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300"}
                   alt={post.title}
                   className="w-full h-48 object-cover"
                   data-testid={`img-featured-post-${post.id}`}
@@ -84,9 +84,9 @@ export default function BlogSection() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <img
-                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&h=50"
-                        alt="Author"
-                        className="w-8 h-8 rounded-full object-cover"
+                        src="/attached_assets/jml.png"
+                        alt="JMLAstro Team"
+                        className="w-8 h-8 rounded-full object-cover bg-white p-1"
                       />
                       <span className="text-sm text-muted-foreground" data-testid={`text-featured-post-author-${post.id}`}>
                         {post.authorName || 'JMLAstro Team'}
@@ -108,7 +108,7 @@ export default function BlogSection() {
             {/* Mock posts when no real posts are available */}
             <article className="glass-card rounded-xl overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer" data-testid="mock-featured-article-1">
               <img
-                src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300"
+                src="https://images.unsplash.com/photo-1444927714506-8492d94b5ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300"
                 alt="Understanding Mercury Retrograde Effects"
                 className="w-full h-48 object-cover"
               />
@@ -128,9 +128,9 @@ export default function BlogSection() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <img
-                      src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&h=50"
-                      alt="Author Profile"
-                      className="w-8 h-8 rounded-full object-cover"
+                      src="/attached_assets/jml.png"
+                      alt="JMLAstro Team"
+                      className="w-8 h-8 rounded-full object-cover bg-white p-1"
                     />
                     <span className="text-sm text-muted-foreground">JMLAstro Team</span>
                   </div>
@@ -143,7 +143,7 @@ export default function BlogSection() {
 
             <article className="glass-card rounded-xl overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer" data-testid="mock-featured-article-2">
               <img
-                src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300"
+                src="https://images.unsplash.com/photo-1518709268805-4e9042af2ac0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300"
                 alt="Zodiac Signs Compatibility Guide"
                 className="w-full h-48 object-cover"
               />
@@ -163,9 +163,9 @@ export default function BlogSection() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <img
-                      src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&h=50"
-                      alt="Author Profile"
-                      className="w-8 h-8 rounded-full object-cover"
+                      src="/attached_assets/jml.png"
+                      alt="JMLAstro Team"
+                      className="w-8 h-8 rounded-full object-cover bg-white p-1"
                     />
                     <span className="text-sm text-muted-foreground">JMLAstro Team</span>
                   </div>
@@ -178,7 +178,7 @@ export default function BlogSection() {
 
             <article className="glass-card rounded-xl overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer" data-testid="mock-featured-article-3">
               <img
-                src="https://images.unsplash.com/photo-1519904981063-b0cf448d479e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300"
+                src="https://images.unsplash.com/photo-1535791311743-9cc3a8b2b4c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300"
                 alt="Career Success Through Astrology"
                 className="w-full h-48 object-cover"
               />
@@ -198,9 +198,9 @@ export default function BlogSection() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <img
-                      src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&h=50"
-                      alt="Author Profile"
-                      className="w-8 h-8 rounded-full object-cover"
+                      src="/attached_assets/jml.png"
+                      alt="JMLAstro Team"
+                      className="w-8 h-8 rounded-full object-cover bg-white p-1"
                     />
                     <span className="text-sm text-muted-foreground">JMLAstro Team</span>
                   </div>

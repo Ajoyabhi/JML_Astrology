@@ -163,49 +163,49 @@ export default function Footer() {
             <h3 className="text-lg font-semibold text-foreground mb-4">{t('footer.support')}</h3>
             <ul className="space-y-3">
               <li>
-                <a 
-                  href="#" 
+                <Link 
+                  href="/contact-us" 
                   className="text-muted-foreground hover:text-primary transition-colors duration-200"
                   data-testid="footer-link-contact"
                 >
                   Contact Us
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
-                  href="#" 
+                <Link 
+                  href="/help-center" 
                   className="text-muted-foreground hover:text-primary transition-colors duration-200"
                   data-testid="footer-link-help"
                 >
                   Help Center
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
-                  href="#" 
+                <Link 
+                  href="/privacy-policy" 
                   className="text-muted-foreground hover:text-primary transition-colors duration-200"
                   data-testid="footer-link-privacy"
                 >
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
-                  href="#" 
+                <Link 
+                  href="/terms-of-service" 
                   className="text-muted-foreground hover:text-primary transition-colors duration-200"
                   data-testid="footer-link-terms"
                 >
                   Terms of Service
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
-                  href="#" 
+                <Link 
+                  href="/refund-policy" 
                   className="text-muted-foreground hover:text-primary transition-colors duration-200"
                   data-testid="footer-link-refund"
                 >
                   Refund Policy
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

@@ -94,7 +94,7 @@ export default function BookingModal({ isOpen, onClose, astrologer }: BookingMod
           {/* Astrologer Info */}
           <div className="flex items-center gap-4 p-4 bg-muted/20 rounded-lg" data-testid="selected-astrologer-info">
             <img
-              src={astrologer.profileImageUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100"}
+              src={astrologer.profileImageUrl || `/attached_assets/generated_images/${astrologer.id % 2 === 0 ? 'Indian_male_astrologer_portrait_b6e4ad40.png' : 'Indian_female_astrologer_portrait_3eec457b.png'}`}
               alt={astrologer.name}
               className="w-16 h-16 rounded-full object-cover"
             />

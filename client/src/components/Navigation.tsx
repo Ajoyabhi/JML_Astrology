@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Moon } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Navigation() {
@@ -26,9 +26,11 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2" data-testid="link-home">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center floating-element">
-              <Moon className="h-4 w-4 text-cosmic-900" />
-            </div>
+            <img 
+              src="/attached_assets/jml_wbg.png" 
+              alt="JMLAstro Logo" 
+              className="w-16 h-16 rounded-full object-cover p-1"
+            />
             <span className="text-xl font-serif font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               JMLAstro
             </span>

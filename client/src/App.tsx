@@ -21,6 +21,11 @@ import Blog from "@/pages/blog";
 import Services from "@/pages/services";
 import Payment from "@/pages/payment";
 import PaymentSuccess from "@/pages/payment-success";
+import PrivacyPolicy from "@/pages/privacy-policy";
+import TermsOfService from "@/pages/terms-of-service";
+import RefundPolicy from "@/pages/refund-policy";
+import ContactUs from "@/pages/contact-us";
+import HelpCenter from "@/pages/help-center";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -114,6 +119,41 @@ function Router() {
                 </PageTransition>
               )}
             </Route>
+            <Route path="/privacy-policy">
+              {() => (
+                <PageTransition>
+                  <PrivacyPolicy />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/terms-of-service">
+              {() => (
+                <PageTransition>
+                  <TermsOfService />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/refund-policy">
+              {() => (
+                <PageTransition>
+                  <RefundPolicy />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/contact-us">
+              {() => (
+                <PageTransition>
+                  <ContactUs />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/help-center">
+              {() => (
+                <PageTransition>
+                  <HelpCenter />
+                </PageTransition>
+              )}
+            </Route>
           </>
         ) : (
           <>
@@ -170,6 +210,41 @@ function Router() {
               {() => (
                 <PageTransition>
                   <PaymentSuccess />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/privacy-policy">
+              {() => (
+                <PageTransition>
+                  <PrivacyPolicy />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/terms-of-service">
+              {() => (
+                <PageTransition>
+                  <TermsOfService />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/refund-policy">
+              {() => (
+                <PageTransition>
+                  <RefundPolicy />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/contact-us">
+              {() => (
+                <PageTransition>
+                  <ContactUs />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/help-center">
+              {() => (
+                <PageTransition>
+                  <HelpCenter />
                 </PageTransition>
               )}
             </Route>

@@ -113,7 +113,7 @@ export default function AstrologersSection() {
                 <div className="p-6">
                   <div className="flex items-start gap-4 mb-4">
                     <img
-                      src={astrologer.profileImageUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150"}
+                      src={astrologer.profileImageUrl || `/attached_assets/generated_images/${astrologer.id % 2 === 0 ? 'Indian_male_astrologer_portrait_b6e4ad40.png' : 'Indian_female_astrologer_portrait_3eec457b.png'}`}
                       alt={astrologer.name}
                       className="w-16 h-16 rounded-full object-cover border-2 border-primary/30"
                       data-testid={`img-featured-astrologer-${astrologer.id}`}

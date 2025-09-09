@@ -13,6 +13,33 @@ import { CardSkeleton } from "@/components/SkeletonLoader";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { Astrologer } from "@shared/schema";
 
+// Helper function to get different astrologer images
+const getAstrologerImage = (id: string, name: string) => {
+  const images = [
+    'Indian_male_astrologer_portrait_b6e4ad40.png',
+    'Indian_female_astrologer_portrait_3eec457b.png',
+    'Elder_Indian_astrologer_portrait_b6960649.png',
+    'Young_Indian_astrologer_portrait_ebf342cd.png',
+    'male1.jpg',
+    'male2.png',
+    'male3.png',
+    'male4.png',
+    'female1.jpg',
+    'female2.png',
+    'female3.png',
+    'female4.png',
+    'female5.png'
+  ];
+  
+  // Use a combination of id and name to get consistent but different images
+  const hash = (id + name).split('').reduce((a, b) => {
+    a = ((a << 5) - a) + b.charCodeAt(0);
+    return a & a;
+  }, 0);
+  
+  return images[Math.abs(hash) % images.length];
+};
+
 export default function Astrologers() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSpecialization, setSelectedSpecialization] = useState<string>("");
@@ -114,7 +141,7 @@ export default function Astrologers() {
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4 mb-4">
                       <img
-                        src={astrologer.profileImageUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150"}
+                        src={astrologer.profileImageUrl || `/attached_assets/generated_images/${getAstrologerImage(astrologer.id, astrologer.name)}`}
                         alt={astrologer.name}
                         className="w-16 h-16 rounded-full object-cover border-2 border-primary/30"
                         data-testid={`img-astrologer-${astrologer.id}`}

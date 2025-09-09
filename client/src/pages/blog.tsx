@@ -46,7 +46,7 @@ export default function Blog() {
                   data-testid={`article-${post.id}`}
                 >
                   <img
-                    src={post.featuredImageUrl || "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300"}
+                    src={post.featuredImageUrl || "https://images.unsplash.com/photo-1444927714506-8492d94b5ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300"}
                     alt={post.title}
                     className="w-full h-48 object-cover"
                     data-testid={`img-post-${post.id}`}
@@ -74,9 +74,9 @@ export default function Blog() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <img
-                          src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&h=50"
-                          alt="Author"
-                          className="w-8 h-8 rounded-full object-cover"
+                          src="/attached_assets/jml.png"
+                          alt="JMLAstro Team"
+                          className="w-8 h-8 rounded-full object-cover bg-white p-1"
                         />
                         <span className="text-sm text-muted-foreground" data-testid={`text-post-author-${post.id}`}>
                           JMLAstro Team

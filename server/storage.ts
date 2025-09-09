@@ -74,6 +74,7 @@ export interface IStorage {
   getHoroscope(zodiacSign: string, type: string, date: Date): Promise<Horoscope | undefined>;
   createHoroscope(horoscope: InsertHoroscope): Promise<Horoscope>;
   getLatestHoroscopes(type: string): Promise<Horoscope[]>;
+  getLatestHoroscopeForSign(zodiacSign: string, type: string): Promise<Horoscope | undefined>;
   
   // Service operations
   getServiceCategories(): Promise<ServiceCategory[]>;
@@ -324,6 +325,25 @@ export class DatabaseStorage implements IStorage {
       .insert(horoscopes)
       .values(horoscopeData)
       .returning();
+    return horoscope;
+  }
+
+  async getLatestHoroscopeForSign(zodiacSign: string, type: string): Promise<Horoscope | undefined> {
+    // Capitalize the zodiac sign to match the database format
+    const capitalizedSign = zodiacSign.charAt(0).toUpperCase() + zodiacSign.slice(1).toLowerCase();
+
+    const [horoscope] = await db
+      .select()
+      .from(horoscopes)
+      .where(
+        and(
+          eq(horoscopes.zodiacSign, capitalizedSign),
+          eq(horoscopes.type, type)
+        )
+      )
+      .orderBy(desc(horoscopes.date))
+      .limit(1);
+    
     return horoscope;
   }
 

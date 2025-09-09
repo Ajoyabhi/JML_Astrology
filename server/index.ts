@@ -1,6 +1,8 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import path from "path";
+
 
 const app = express();
 app.use(express.json());
@@ -37,6 +39,16 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Serve static images from attached_assets/generated_images
+  const imagesPath = path.resolve(import.meta.dirname, "..", "attached_assets", "generated_images");
+  app.use("/api/images", express.static(imagesPath));
+  log(`Serving static images from: ${imagesPath}`);
+
+  // Serve static assets from attached_assets
+  const assetsPath = path.resolve(import.meta.dirname, "..", "attached_assets");
+  app.use("/attached_assets", express.static(assetsPath));
+  log(`Serving static assets from: ${assetsPath}`);
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -61,11 +73,7 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
+  server.listen(port, () => {
     log(`serving on port ${port}`);
   });
 })();

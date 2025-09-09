@@ -76,6 +76,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/astrologers/:id", async (req, res) => {
+    try {
+      const astrologer = await storage.updateAstrologer(req.params.id, req.body);
+      res.json(astrologer);
+    } catch (error) {
+      console.error("Error updating astrologer:", error);
+      res.status(500).json({ message: "Failed to update astrologer" });
+    }
+  });
+
+  // Helper endpoint to update astrologer images
+  app.post("/api/astrologers/update-images", async (req, res) => {
+    try {
+      const astrologers = await storage.getAstrologers();
+      const imageMap = {
+        "Pandit Rajesh Kumar": "/api/images/Elder_Indian_astrologer_portrait_b6960649.png",
+        "Shrimati Priya Sharma": "/api/images/Indian_female_astrologer_portrait_3eec457b.png", 
+        "Acharya Vikram Singh": "/api/images/Indian_male_astrologer_portrait_b6e4ad40.png",
+        "Swami Arjun Dev": "/api/images/Young_Indian_astrologer_portrait_ebf342cd.png"
+      };
+
+      const updates = [];
+      for (const astrologer of astrologers) {
+        const imagePath = imageMap[astrologer.name as keyof typeof imageMap];
+        if (imagePath && astrologer.profileImageUrl !== imagePath) {
+          await storage.updateAstrologer(astrologer.id, { profileImageUrl: imagePath });
+          updates.push({ name: astrologer.name, newImageUrl: imagePath });
+        }
+      }
+
+      res.json({ message: "Image paths updated", updates });
+    } catch (error) {
+      console.error("Error updating astrologer images:", error);
+      res.status(500).json({ message: "Failed to update astrologer images" });
+    }
+  });
+
   // Consultation routes
   app.get("/api/consultations", isAuthenticated, async (req: any, res) => {
     try {
@@ -163,13 +200,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/horoscope/:sign/:type", async (req, res) => {
     try {
       const { sign, type } = req.params;
-      const date = req.query.date ? new Date(req.query.date as string) : new Date();
+      const requestedDate = req.query.date ? new Date(req.query.date as string) : new Date();
+      const today = new Date();
       
-      const horoscope = await storage.getHoroscope(sign, type, date);
+      // First, try to get horoscope for the requested date
+      let horoscope = await storage.getHoroscope(sign, type, requestedDate);
+      
+      // If not found, try to get the most recent horoscope for this sign/type
+      if (!horoscope) {
+        horoscope = await storage.getLatestHoroscopeForSign(sign, type);
+      }
+      
       if (!horoscope) {
         return res.status(404).json({ message: "Horoscope not found" });
       }
-      res.json(horoscope);
+      
+      // Always return with today's date for UI display, but keep original content
+      const responseHoroscope = {
+        ...horoscope,
+        date: today.toISOString() // Always show today's date in UI
+      };
+      
+      res.json(responseHoroscope);
     } catch (error) {
       console.error("Error fetching horoscope:", error);
       res.status(500).json({ message: "Failed to fetch horoscope" });

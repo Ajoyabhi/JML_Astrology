@@ -17,6 +17,20 @@ export default function Horoscope() {
 
   const { data: horoscope, isLoading } = useQuery<Horoscope>({
     queryKey: ["/api/horoscope", selectedSign, activeType],
+    queryFn: async () => {
+      const response = await fetch(`/api/horoscope/${selectedSign}/${activeType}`, {
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          return null; // Return null for 404 to show "no horoscope available"
+        }
+        throw new Error('Failed to fetch horoscope');
+      }
+      
+      return response.json();
+    },
     enabled: !!selectedSign && !!activeType,
   });
 
