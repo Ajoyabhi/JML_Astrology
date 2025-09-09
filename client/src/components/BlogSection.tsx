@@ -89,7 +89,7 @@ export default function BlogSection() {
                         className="w-8 h-8 rounded-full object-cover"
                       />
                       <span className="text-sm text-muted-foreground" data-testid={`text-featured-post-author-${post.id}`}>
-                        {post.authorName || 'AstroMystic Team'}
+                        {post.authorName || 'JMLAstro Team'}
                       </span>
                     </div>
                     <button 
@@ -132,7 +132,7 @@ export default function BlogSection() {
                       alt="Author Profile"
                       className="w-8 h-8 rounded-full object-cover"
                     />
-                    <span className="text-sm text-muted-foreground">AstroMystic Team</span>
+                    <span className="text-sm text-muted-foreground">JMLAstro Team</span>
                   </div>
                   <button className="text-primary hover:text-primary/80 transition-colors duration-200">
                     <ArrowRight className="w-4 h-4" />
@@ -167,7 +167,7 @@ export default function BlogSection() {
                       alt="Author Profile"
                       className="w-8 h-8 rounded-full object-cover"
                     />
-                    <span className="text-sm text-muted-foreground">AstroMystic Team</span>
+                    <span className="text-sm text-muted-foreground">JMLAstro Team</span>
                   </div>
                   <button className="text-primary hover:text-primary/80 transition-colors duration-200">
                     <ArrowRight className="w-4 h-4" />
@@ -202,7 +202,7 @@ export default function BlogSection() {
                       alt="Author Profile"
                       className="w-8 h-8 rounded-full object-cover"
                     />
-                    <span className="text-sm text-muted-foreground">AstroMystic Team</span>
+                    <span className="text-sm text-muted-foreground">JMLAstro Team</span>
                   </div>
                   <button className="text-primary hover:text-primary/80 transition-colors duration-200">
                     <ArrowRight className="w-4 h-4" />

@@ -30,7 +30,7 @@ export default function Navigation() {
               <Moon className="h-4 w-4 text-cosmic-900" />
             </div>
             <span className="text-xl font-serif font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              AstroMystic
+              JMLAstro
             </span>
           </Link>
 

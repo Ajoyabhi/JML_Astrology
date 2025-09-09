@@ -1,8 +1,8 @@
-# AstroMystic Platform
+# JMLAstro Platform
 
 ## Overview
 
-AstroMystic is a modern full-stack astrology consultation platform built with React, Express.js, and PostgreSQL. The platform provides users with horoscope readings, astrology calculators, astrologer directory and booking system, and educational blog content. It features a celestial-themed UI with dark mode design, user authentication via Replit Auth, and real-time consultation booking capabilities.
+JMLAstro is a modern full-stack astrology consultation platform built with React, Express.js, and PostgreSQL. The platform provides users with horoscope readings, astrology calculators, astrologer directory and booking system, and educational blog content. It features a celestial-themed UI with dark mode design, user authentication via Replit Auth, and real-time consultation booking capabilities.
 
 ## User Preferences
 

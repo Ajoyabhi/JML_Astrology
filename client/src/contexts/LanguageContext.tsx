@@ -86,7 +86,7 @@ const translations = {
     'footer.resources': 'Resources',
     'footer.support': 'Support',
     'footer.available_in': 'Available in:',
-    'footer.copyright': '© 2024 AstroMystic. All rights reserved. Unlocking cosmic wisdom for every soul.',
+    'footer.copyright': '© 2024 JMLAstro. All rights reserved. Unlocking cosmic wisdom for every soul.',
     
     // Hero Section
     'hero.unlock': 'Unlock Your',

@@ -1,6 +1,6 @@
-# 🌟 AstroMystic - Astrology Consultation Platform
+# 🌟 JMLAstro - Astrology Consultation Platform
 
-A modern, full-stack astrology consultation platform that brings cosmic wisdom to the digital age. AstroMystic offers users horoscope readings, astrology calculators, professional astrologer consultations, and educational content through a beautiful, responsive web interface.
+A modern, full-stack astrology consultation platform that brings cosmic wisdom to the digital age. JMLAstro offers users horoscope readings, astrology calculators, professional astrologer consultations, and educational content through a beautiful, responsive web interface.
 
 ![AstroMystic Banner](https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1200&h=400&fit=crop)
 
@@ -259,7 +259,7 @@ The application is optimized for Replit deployment with:
 
 ## 🌍 Internationalization
 
-AstroMystic supports multiple languages:
+JMLAstro supports multiple languages:
 - **English** - Default language
 - **Hindi** - Hindi language support
 - **Bengali** - Bengali language support
@@ -323,4 +323,4 @@ For support and questions:
 
 ---
 
-Made with ⭐ and cosmic energy by the AstroMystic team
+Made with ⭐ and cosmic energy by the JMLAstro team

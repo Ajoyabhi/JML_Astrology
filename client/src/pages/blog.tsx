@@ -77,7 +77,7 @@ export default function Blog() {
                           className="w-8 h-8 rounded-full object-cover"
                         />
                         <span className="text-sm text-muted-foreground" data-testid={`text-post-author-${post.id}`}>
-                          AstroMystic Team
+                          JMLAstro Team
                         </span>
                       </div>
                       <button className="text-primary hover:text-primary/80 transition-colors duration-200" data-testid={`button-read-post-${post.id}`}>
