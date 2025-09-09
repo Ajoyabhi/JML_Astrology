@@ -1,14 +1,12 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
-import type { Consultation, User } from "@shared/schema";
+import type { Consultation } from "@shared/schema";
 import { TrendingUp, MessageCircle, Calculator, User as UserIcon, Calendar, Sparkles, Star, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
 
 export default function Home() {
-  const { user } = useAuth();
   const { t } = useLanguage();
   
   const { data: consultations = [] } = useQuery<Consultation[]>({
@@ -120,7 +118,7 @@ export default function Home() {
                 }}
                 style={{ backgroundSize: "200% 100%" }}
               >
-                {(user as User)?.firstName || t('home.cosmic_seeker')}
+                {t('home.cosmic_seeker')}
               </motion.span>
             </motion.h1>
             
