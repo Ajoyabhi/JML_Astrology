@@ -193,6 +193,9 @@ const translations = {
     'nav.astrologers': 'বেস্ট জ্যোতিষী',
     'nav.services': 'সেবা',
     'nav.blog': 'ব্লগ',
+    'nav.login': 'লগইন',
+    'nav.logout': 'লগআউট',
+    'nav.signup': 'সাইন আপ',
     
     // Home Page
     'home.welcome': 'আবার স্বাগতম,',
