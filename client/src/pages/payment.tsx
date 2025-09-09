@@ -83,6 +83,20 @@ export default function Payment() {
           tags: bookingData.tags,
           bookingType: 'service'
         });
+      } else if (bookingData.bookingType === 'donation') {
+        // Donation booking
+        setOrderData({
+          serviceName: bookingData.serviceName,
+          description: bookingData.description,
+          amount: bookingData.amount,
+          currency: bookingData.currency,
+          orderId: bookingData.orderId,
+          deliveryTime: bookingData.deliveryTime,
+          tags: bookingData.tags,
+          bookingType: 'donation'
+        });
+        // Set initial selected amount from donation data
+        setSelectedAmount(bookingData.amount);
       } else {
         // Consultation booking (default)
         setOrderData({
