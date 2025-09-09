@@ -6,11 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { useLocation } from "wouter";
 import { MessageCircle, Phone, Video, X } from "lucide-react";
 
 interface BookingModalProps {
@@ -21,55 +20,13 @@ interface BookingModalProps {
 
 export default function BookingModal({ isOpen, onClose, astrologer }: BookingModalProps) {
   const { toast } = useToast();
-  const { isAuthenticated } = useAuth();
-  const queryClient = useQueryClient();
+  const [, navigate] = useLocation();
   
   const [consultationType, setConsultationType] = useState<string>(astrologer?.consultationType || "chat");
   const [duration, setDuration] = useState<string>("15");
   const [topic, setTopic] = useState<string>("");
   const [paymentMethod, setPaymentMethod] = useState<string>("wallet");
 
-  const bookingMutation = useMutation({
-    mutationFn: async (data: any) => {
-      if (!isAuthenticated) {
-        window.location.href = "/api/login";
-        return;
-      }
-      
-      const response = await apiRequest("POST", "/api/consultations", data);
-      return response.json();
-    },
-    onSuccess: (data) => {
-      toast({
-        title: "Consultation Booked!",
-        description: "Your consultation has been successfully booked. You will receive a confirmation shortly.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/consultations"] });
-      onClose();
-      // Reset form
-      setTopic("");
-      setDuration("15");
-      setPaymentMethod("wallet");
-    },
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-      toast({
-        title: "Booking Failed",
-        description: "Failed to book consultation. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,13 +37,30 @@ export default function BookingModal({ isOpen, onClose, astrologer }: BookingMod
     const pricePerMinute = parseFloat(astrologer.pricePerMinute);
     const totalPrice = durationMinutes * pricePerMinute;
 
-    bookingMutation.mutate({
+    // Store booking details in sessionStorage to pass to payment page
+    const bookingData = {
       astrologerId: astrologer.id,
-      type: consultationType,
+      astrologerName: astrologer.name,
+      astrologerImage: astrologer.profileImageUrl,
+      specialization: astrologer.specialization,
+      pricePerMinute: astrologer.pricePerMinute,
+      consultationType,
       duration: durationMinutes,
-      price: totalPrice,
+      totalPrice,
       topic: topic || undefined,
-      scheduledAt: new Date().toISOString(),
+      paymentMethod,
+      scheduledAt: new Date().toISOString()
+    };
+    
+    sessionStorage.setItem('pendingBooking', JSON.stringify(bookingData));
+    
+    // Close modal and redirect to payment
+    onClose();
+    navigate('/payment');
+    
+    toast({
+      title: "Redirecting to Payment",
+      description: "Please complete your payment to confirm the booking.",
     });
   };
 
@@ -226,52 +200,37 @@ export default function BookingModal({ isOpen, onClose, astrologer }: BookingMod
             />
           </div>
 
-          {/* Payment Method */}
-          <div>
-            <Label className="text-sm font-medium text-foreground mb-3 block">Payment Method</Label>
-            <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} data-testid="radio-payment-method">
-              <div className="flex items-center p-3 glass-card rounded-lg cursor-pointer hover:bg-primary/10 transition-colors duration-200">
-                <RadioGroupItem value="wallet" id="wallet" className="sr-only" />
-                <Label htmlFor="wallet" className="flex items-center w-full cursor-pointer">
-                  <div className={`w-4 h-4 border-2 border-primary rounded-full mr-3 flex items-center justify-center ${
-                    paymentMethod === "wallet" ? "bg-primary" : ""
-                  }`}>
-                    {paymentMethod === "wallet" && <div className="w-2 h-2 bg-cosmic-900 rounded-full"></div>}
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-foreground">Wallet Balance</div>
-                    <div className="text-sm text-muted-foreground">₹2,500 available</div>
-                  </div>
-                </Label>
+          {/* Booking Summary */}
+          <div className="bg-gradient-to-br from-primary/5 to-accent/5 p-4 rounded-lg border border-primary/20">
+            <h4 className="text-sm font-semibold text-foreground mb-2">Booking Summary</h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Duration:</span>
+                <span className="text-foreground">{duration} minutes</span>
               </div>
-              <div className="flex items-center p-3 glass-card rounded-lg cursor-pointer hover:bg-primary/10 transition-colors duration-200">
-                <RadioGroupItem value="upi" id="upi" className="sr-only" />
-                <Label htmlFor="upi" className="flex items-center w-full cursor-pointer">
-                  <div className={`w-4 h-4 border-2 border-primary rounded-full mr-3 flex items-center justify-center ${
-                    paymentMethod === "upi" ? "bg-primary" : ""
-                  }`}>
-                    {paymentMethod === "upi" && <div className="w-2 h-2 bg-cosmic-900 rounded-full"></div>}
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-foreground">UPI Payment</div>
-                    <div className="text-sm text-muted-foreground">Pay via UPI apps</div>
-                  </div>
-                </Label>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Type:</span>
+                <span className="text-foreground capitalize">{consultationType}</span>
               </div>
-            </RadioGroup>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Rate:</span>
+                <span className="text-foreground">₹{pricePerMinute}/min</span>
+              </div>
+              <div className="border-t border-primary/20 pt-2 flex justify-between font-semibold">
+                <span className="text-foreground">Total:</span>
+                <span className="text-primary">₹{totalPrice.toFixed(0)}</span>
+              </div>
+            </div>
           </div>
 
           {/* Book Button */}
           <Button
             type="submit"
             className="w-full px-6 py-4 bg-gradient-to-r from-primary to-gold-400 text-cosmic-900 rounded-lg font-semibold text-lg hover:shadow-xl transition-all duration-300"
-            disabled={bookingMutation.isPending}
+disabled={false}
             data-testid="button-confirm-booking"
           >
-            {bookingMutation.isPending 
-              ? "Booking..." 
-              : `Book Consultation - ₹${totalPrice.toFixed(0)}`
-            }
+Proceed to Payment - ₹{totalPrice.toFixed(0)}
           </Button>
         </form>
       </DialogContent>

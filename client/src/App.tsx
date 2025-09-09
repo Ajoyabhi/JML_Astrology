@@ -17,6 +17,8 @@ import Horoscope from "@/pages/horoscope";
 import Astrologers from "@/pages/astrologers";
 import Blog from "@/pages/blog";
 import Services from "@/pages/services";
+import Payment from "@/pages/payment";
+import PaymentSuccess from "@/pages/payment-success";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -82,6 +84,20 @@ function Router() {
                 </PageTransition>
               )}
             </Route>
+            <Route path="/payment">
+              {() => (
+                <PageTransition>
+                  <Payment />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/payment/success">
+              {() => (
+                <PageTransition>
+                  <PaymentSuccess />
+                </PageTransition>
+              )}
+            </Route>
           </>
         ) : (
           <>
@@ -124,6 +140,20 @@ function Router() {
               {() => (
                 <PageTransition>
                   <Services />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/payment">
+              {() => (
+                <PageTransition>
+                  <Payment />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/payment/success">
+              {() => (
+                <PageTransition>
+                  <PaymentSuccess />
                 </PageTransition>
               )}
             </Route>
