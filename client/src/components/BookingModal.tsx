@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useLocation } from "wouter";
-import { MessageCircle, Phone, Video, X } from "lucide-react";
+import { MessageCircle, Phone, Video } from "lucide-react";
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -74,20 +74,9 @@ export default function BookingModal({ isOpen, onClose, astrologer }: BookingMod
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="glass-card max-w-md max-h-[90vh] overflow-y-auto" data-testid="booking-modal">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-2xl font-serif font-bold text-foreground">
-              Book Consultation
-            </DialogTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="p-2 hover:bg-muted rounded-lg"
-              data-testid="button-close-modal"
-            >
-              <X className="h-4 w-4 text-muted-foreground" />
-            </Button>
-          </div>
+          <DialogTitle className="text-2xl font-serif font-bold text-foreground">
+            Book Consultation
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">

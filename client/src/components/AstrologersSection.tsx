@@ -16,6 +16,17 @@ export default function AstrologersSection() {
 
   const { data: astrologers = [], isLoading } = useQuery<Astrologer[]>({
     queryKey: ["/api/astrologers", searchQuery, selectedSpecialization, selectedLanguage],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (searchQuery) params.append('search', searchQuery);
+      if (selectedSpecialization && selectedSpecialization !== 'all') params.append('specialization', selectedSpecialization);
+      if (selectedLanguage && selectedLanguage !== 'all') params.append('language', selectedLanguage);
+      
+      const url = `/api/astrologers${params.toString() ? `?${params.toString()}` : ''}`;
+      const response = await fetch(url, { credentials: 'include' });
+      if (!response.ok) throw new Error('Failed to fetch astrologers');
+      return response.json();
+    },
   });
 
   const handleBookConsultation = (astrologer: Astrologer, type: string) => {
@@ -113,7 +124,7 @@ export default function AstrologersSection() {
                 <div className="p-6">
                   <div className="flex items-start gap-4 mb-4">
                     <img
-                      src={astrologer.profileImageUrl || `/attached_assets/generated_images/${astrologer.id % 2 === 0 ? 'Indian_male_astrologer_portrait_b6e4ad40.png' : 'Indian_female_astrologer_portrait_3eec457b.png'}`}
+                      src={astrologer.profileImageUrl || `/attached_assets/generated_images/${(typeof astrologer.id === 'string' ? parseInt(astrologer.id) : astrologer.id) % 2 === 0 ? 'Indian_male_astrologer_portrait_b6e4ad40.png' : 'Indian_female_astrologer_portrait_3eec457b.png'}`}
                       alt={astrologer.name}
                       className="w-16 h-16 rounded-full object-cover border-2 border-primary/30"
                       data-testid={`img-featured-astrologer-${astrologer.id}`}
@@ -130,7 +141,7 @@ export default function AstrologersSection() {
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
-                              className={`w-3 h-3 ${i < Math.floor(parseFloat(astrologer.rating)) ? 'fill-current' : ''}`}
+                              className={`w-3 h-3 ${i < Math.floor(parseFloat(astrologer.rating || '0')) ? 'fill-current' : ''}`}
                             />
                           ))}
                         </div>

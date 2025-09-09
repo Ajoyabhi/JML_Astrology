@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import DonationBanner from "@/components/DonationBanner";
 import Footer from "@/components/Footer";
+import AstrologersSection from "@/components/AstrologersSection";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import type { Consultation, User } from "@shared/schema";
@@ -381,6 +382,7 @@ export default function Home() {
         </motion.div>
       </main>
       
+      <AstrologersSection />
       <Footer />
     </div>
   );
