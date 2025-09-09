@@ -14,6 +14,7 @@ export default function DonationBanner() {
       description: "Help us spread astrology wisdom to more souls around the universe!",
       shortDescription: "Cosmic Mission Support",
       price: 500, // Default amount, user can change on payment page
+      amount: 500, // Add explicit amount field
       currency: "INR",
       deliveryTime: "Instant",
       tags: ["donation", "support"],

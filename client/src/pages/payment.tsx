@@ -177,7 +177,12 @@ export default function Payment() {
     }
   };
 
-  const formatPrice = (price: number, currency: string) => {
+  const formatPrice = (price: number | undefined, currency: string) => {
+    // Handle undefined or null price values
+    if (price === undefined || price === null || isNaN(price)) {
+      return currency === 'INR' ? '₹0' : `${currency} 0`;
+    }
+    
     if (currency === 'INR') {
       return `₹${price.toLocaleString('en-IN')}`;
     }
