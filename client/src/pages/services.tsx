@@ -47,11 +47,30 @@ export default function Services() {
 
   const handleQuickBook = (service: Service, e: React.MouseEvent) => {
     e.stopPropagation();
+    
+    // Store service booking details in sessionStorage to pass to payment page
+    const serviceBookingData = {
+      serviceId: service.id,
+      serviceName: service.name,
+      description: service.description,
+      shortDescription: service.shortDescription,
+      price: Number(service.price),
+      currency: service.currency || 'INR',
+      deliveryTime: service.deliveryTime,
+      tags: service.tags,
+      isFeatured: service.isFeatured,
+      bookingType: 'service', // distinguish from consultation bookings
+      orderId: "JML" + Date.now()
+    };
+    
+    sessionStorage.setItem('pendingBooking', JSON.stringify(serviceBookingData));
+    
     toast({
-      title: "Book Service",
-      description: `Redirecting to book ${service.name}...`,
+      title: "Redirecting to Payment",
+      description: `Please complete payment for ${service.name}`,
     });
-    navigate(`/services/${service.id}/book`);
+    
+    navigate('/payment');
   };
 
   const formatPrice = (price: number, currency: string) => {
