@@ -11,6 +11,8 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import NavigationProgress from "@/components/NavigationProgress";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
+import Login from "@/pages/login";
+import Signup from "@/pages/signup";
 import Home from "@/pages/home";
 import Calculators from "@/pages/calculators";
 import Horoscope from "@/pages/horoscope";
@@ -95,6 +97,20 @@ function Router() {
               {() => (
                 <PageTransition>
                   <PaymentSuccess />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/login">
+              {() => (
+                <PageTransition>
+                  <Login />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/signup">
+              {() => (
+                <PageTransition>
+                  <Signup />
                 </PageTransition>
               )}
             </Route>

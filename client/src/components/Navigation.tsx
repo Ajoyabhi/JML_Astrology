@@ -67,21 +67,23 @@ export default function Navigation() {
               </Button>
             ) : (
               <>
-                <Button
-                  onClick={() => window.location.href = "/api/login"}
-                  variant="ghost"
-                  className="text-muted-foreground hover:text-primary"
-                  data-testid="button-login"
-                >
-                  {t('nav.login')}
-                </Button>
-                <Button
-                  onClick={() => window.location.href = "/api/login"}
-                  className="bg-gradient-to-r from-primary to-gold-400 text-cosmic-900 hover:shadow-lg"
-                  data-testid="button-signup"
-                >
-                  {t('nav.signup')}
-                </Button>
+                <Link href="/login">
+                  <Button
+                    variant="ghost"
+                    className="text-muted-foreground hover:text-primary"
+                    data-testid="button-login"
+                  >
+                    {t('nav.login')}
+                  </Button>
+                </Link>
+                <Link href="/signup">
+                  <Button
+                    className="bg-gradient-to-r from-primary to-gold-400 text-cosmic-900 hover:shadow-lg"
+                    data-testid="button-signup"
+                  >
+                    {t('nav.signup')}
+                  </Button>
+                </Link>
               </>
             )}
           </div>
@@ -132,21 +134,23 @@ export default function Navigation() {
                 </Button>
               ) : (
                 <>
-                  <Button
-                    onClick={() => window.location.href = "/api/login"}
-                    variant="ghost"
-                    className="w-full text-muted-foreground hover:text-primary"
-                    data-testid="mobile-button-login"
-                  >
-                    {t('nav.login')}
-                  </Button>
-                  <Button
-                    onClick={() => window.location.href = "/api/login"}
-                    className="w-full bg-gradient-to-r from-primary to-gold-400 text-cosmic-900"
-                    data-testid="mobile-button-signup"
-                  >
-                    {t('nav.signup')}
-                  </Button>
+                  <Link href="/login">
+                    <Button
+                      variant="ghost"
+                      className="w-full text-muted-foreground hover:text-primary"
+                      data-testid="mobile-button-login"
+                    >
+                      {t('nav.login')}
+                    </Button>
+                  </Link>
+                  <Link href="/signup">
+                    <Button
+                      className="w-full bg-gradient-to-r from-primary to-gold-400 text-cosmic-900"
+                      data-testid="mobile-button-signup"
+                    >
+                      {t('nav.signup')}
+                    </Button>
+                  </Link>
                 </>
               )}
             </div>
