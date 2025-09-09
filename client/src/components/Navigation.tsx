@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Moon } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isAuthenticated, isLoading } = useAuth();
   const [location] = useLocation();
 
   const { t } = useLanguage();
@@ -52,39 +50,6 @@ export default function Navigation() {
             ))}
           </div>
 
-          {/* Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
-            {isLoading ? (
-              <div className="w-20 h-8 bg-muted animate-pulse rounded"></div>
-            ) : isAuthenticated ? (
-              <Button
-                onClick={() => window.location.href = "/api/logout"}
-                variant="outline"
-                className="border-primary/30 text-primary hover:bg-primary/10"
-                data-testid="button-logout"
-              >
-                {t('nav.logout')}
-              </Button>
-            ) : (
-              <>
-                <Button
-                  onClick={() => window.location.href = "/api/login"}
-                  variant="ghost"
-                  className="text-muted-foreground hover:text-primary"
-                  data-testid="button-login"
-                >
-                  {t('nav.login')}
-                </Button>
-                <Button
-                  onClick={() => window.location.href = "/api/login"}
-                  className="bg-gradient-to-r from-primary to-gold-400 text-cosmic-900 hover:shadow-lg"
-                  data-testid="button-signup"
-                >
-                  {t('nav.signup')}
-                </Button>
-              </>
-            )}
-          </div>
 
           {/* Mobile Menu Button */}
           <button
@@ -120,36 +85,6 @@ export default function Navigation() {
                 {item.label}
               </Link>
             ))}
-            <div className="pt-4 border-t border-border space-y-2">
-              {isAuthenticated ? (
-                <Button
-                  onClick={() => window.location.href = "/api/logout"}
-                  variant="outline"
-                  className="w-full border-primary/30 text-primary hover:bg-primary/10"
-                  data-testid="mobile-button-logout"
-                >
-                  {t('nav.logout')}
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    onClick={() => window.location.href = "/api/login"}
-                    variant="ghost"
-                    className="w-full text-muted-foreground hover:text-primary"
-                    data-testid="mobile-button-login"
-                  >
-                    {t('nav.login')}
-                  </Button>
-                  <Button
-                    onClick={() => window.location.href = "/api/login"}
-                    className="w-full bg-gradient-to-r from-primary to-gold-400 text-cosmic-900"
-                    data-testid="mobile-button-signup"
-                  >
-                    {t('nav.signup')}
-                  </Button>
-                </>
-              )}
-            </div>
           </div>
         </div>
       )}
