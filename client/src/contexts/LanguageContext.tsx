@@ -19,9 +19,6 @@ const translations = {
     'nav.astrologers': 'Best Astrologers',
     'nav.services': 'Services',
     'nav.blog': 'Blog',
-    'nav.login': 'Login',
-    'nav.logout': 'Logout',
-    'nav.signup': 'Sign Up',
     
     // Home Page
     'home.welcome': 'Welcome back,',
@@ -106,9 +103,6 @@ const translations = {
     'nav.astrologers': 'बेस्ट ज्योतिषी',
     'nav.services': 'सेवाएं',
     'nav.blog': 'ब्लॉग',
-    'nav.login': 'लॉगिन',
-    'nav.logout': 'लॉगआउट',
-    'nav.signup': 'साइन अप',
     
     // Home Page
     'home.welcome': 'वापस आपका स्वागत है,',
@@ -193,9 +187,6 @@ const translations = {
     'nav.astrologers': 'বেস্ট জ্যোতিষী',
     'nav.services': 'সেবা',
     'nav.blog': 'ব্লগ',
-    'nav.login': 'লগইন',
-    'nav.logout': 'লগআউট',
-    'nav.signup': 'সাইন আপ',
     
     // Home Page
     'home.welcome': 'আবার স্বাগতম,',
