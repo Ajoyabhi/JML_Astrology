@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { useLocation } from 'wouter';
 import { Star, Clock, IndianRupee, Filter, Search, ShoppingCart } from 'lucide-react';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -60,8 +62,11 @@ export default function Services() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 dark:from-slate-950 dark:via-blue-950/30 dark:to-purple-950/20">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen">
+      <Navigation />
+      
+      <main className="pt-20 pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -69,10 +74,10 @@ export default function Services() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-amber-600 bg-clip-text text-transparent mb-4">
+          <h1 className="text-4xl md:text-5xl font-serif font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
             Astrology Services
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Discover your cosmic path with our comprehensive astrology services. From personal readings to business guidance, we have everything you need.
           </p>
         </motion.div>
@@ -82,18 +87,18 @@ export default function Services() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl p-6 mb-8 shadow-lg border border-white/20"
+          className="glass-card backdrop-blur-sm rounded-2xl p-6 mb-8 shadow-lg border border-border"
         >
           <div className="flex flex-col md:flex-row gap-4 items-center">
             {/* Search */}
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 data-testid="input-search-services"
                 placeholder="Search services..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 bg-input border-border"
               />
             </div>
 
@@ -102,7 +107,7 @@ export default function Services() {
               value={selectedCategory} 
               onValueChange={setSelectedCategory}
             >
-              <SelectTrigger data-testid="select-category" className="w-full md:w-[200px]">
+              <SelectTrigger data-testid="select-category" className="w-full md:w-[200px] bg-input border-border">
                 <Filter className="h-4 w-4 mr-2" />
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
@@ -121,7 +126,7 @@ export default function Services() {
               data-testid="button-toggle-featured"
               variant={showFeatured ? "default" : "outline"}
               onClick={() => setShowFeatured(!showFeatured)}
-              className="w-full md:w-auto"
+              className="w-full md:w-auto bg-gradient-to-r from-primary to-gold-400 text-cosmic-900 hover:shadow-lg"
             >
               <Star className="h-4 w-4 mr-2" />
               Featured
@@ -185,21 +190,21 @@ export default function Services() {
                 >
                   <Card 
                     data-testid={`card-service-${service.id}`}
-                    className="h-full cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02] bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-white/20 overflow-hidden group"
+                    className="h-full cursor-pointer glass-card hover:scale-105 transition-all duration-300 overflow-hidden group"
                     onClick={() => handleServiceClick(service.id)}
                   >
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                          <CardTitle className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
                             {service.name}
                           </CardTitle>
-                          <CardDescription className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          <CardDescription className="text-sm text-muted-foreground mt-1">
                             {service.shortDescription}
                           </CardDescription>
                         </div>
                         {service.isFeatured && (
-                          <Badge variant="secondary" className="ml-2 shrink-0">
+                          <Badge className="ml-2 shrink-0 bg-gradient-to-r from-primary to-gold-400 text-cosmic-900">
                             <Star className="h-3 w-3 mr-1" />
                             Featured
                           </Badge>
@@ -208,18 +213,18 @@ export default function Services() {
                     </CardHeader>
 
                     <CardContent className="pb-4">
-                      <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3 mb-4">
+                      <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
                         {service.description}
                       </p>
 
                       <div className="space-y-2">
-                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                          <Clock className="h-4 w-4 mr-2 text-blue-500" />
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Clock className="h-4 w-4 mr-2 text-primary" />
                           <span>{service.deliveryTime}</span>
                         </div>
                         
-                        <div className="flex items-center text-sm font-medium text-gray-900 dark:text-white">
-                          <IndianRupee className="h-4 w-4 mr-1 text-green-600" />
+                        <div className="flex items-center text-sm font-medium text-foreground">
+                          <IndianRupee className="h-4 w-4 mr-1 text-gold-400" />
                           <span>{formatPrice(Number(service.price), service.currency || 'INR')}</span>
                         </div>
                       </div>
@@ -248,7 +253,7 @@ export default function Services() {
                     <CardFooter className="pt-0">
                       <Button 
                         data-testid={`button-book-service-${service.id}`}
-                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all"
+                        className="w-full bg-gradient-to-r from-primary to-gold-400 text-cosmic-900 hover:shadow-lg transition-all"
                         onClick={(e) => handleQuickBook(service, e)}
                       >
                         <ShoppingCart className="h-4 w-4 mr-2" />
@@ -269,10 +274,10 @@ export default function Services() {
             className="text-center py-12"
           >
             <div className="text-6xl mb-4">🔮</div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            <h3 className="text-xl font-semibold text-foreground mb-2">
               No Services Found
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+            <p className="text-muted-foreground mb-6">
               Try adjusting your search filters or browse all services.
             </p>
             <Button
@@ -282,13 +287,16 @@ export default function Services() {
                 setSearchQuery('');
                 setShowFeatured(false);
               }}
-              variant="outline"
+              className="bg-gradient-to-r from-primary to-gold-400 text-cosmic-900 hover:shadow-lg"
             >
               Clear Filters
             </Button>
           </motion.div>
         )}
-      </div>
+        </div>
+      </main>
+      
+      <Footer />
     </div>
   );
 }
