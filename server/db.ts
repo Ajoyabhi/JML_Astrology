@@ -24,11 +24,14 @@ async function initializeDatabase() {
   
   if (isNeonUrl) {
     // Use Neon serverless driver for Neon databases
-    console.log('Using Neon serverless driver');
+    const ws = (await import('ws')).default;
     const { Pool } = await import('@neondatabase/serverless');
     const { drizzle } = await import('drizzle-orm/neon-serverless');
     
-    pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      webSocketConstructor: ws,  // 👈 Fix here
+    });
     db = drizzle({ client: pool, schema });
   } else {
     // Use regular PostgreSQL driver for other databases
