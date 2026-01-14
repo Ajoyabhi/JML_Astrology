@@ -423,6 +423,645 @@ Remember, astrology can provide insights, but successful relationships require e
   }
 ];
 
+const serviceCategoriesData = [
+  {
+    name: 'Kundli & Birth Chart',
+    description: 'Comprehensive birth chart analysis and Kundli reading services',
+    icon: 'star',
+    displayOrder: 1,
+    isActive: true
+  },
+  {
+    name: 'Marriage & Compatibility',
+    description: 'Marriage compatibility, matchmaking, and relationship analysis',
+    icon: 'heart',
+    displayOrder: 2,
+    isActive: true
+  },
+  {
+    name: 'Career & Business',
+    description: 'Career guidance, business astrology, and professional success',
+    icon: 'briefcase',
+    displayOrder: 3,
+    isActive: true
+  },
+  {
+    name: 'Remedies & Solutions',
+    description: 'Astrological remedies, gemstones, and solutions for life problems',
+    icon: 'sparkles',
+    displayOrder: 4,
+    isActive: true
+  },
+  {
+    name: 'Health & Medical',
+    description: 'Health astrology, medical astrology, and wellness guidance',
+    icon: 'heart-pulse',
+    displayOrder: 5,
+    isActive: true
+  },
+  {
+    name: 'Muhurat & Timing',
+    description: 'Auspicious timing selection for important events and ceremonies',
+    icon: 'clock',
+    displayOrder: 6,
+    isActive: true
+  },
+  {
+    name: 'Predictions & Forecasts',
+    description: 'Future predictions, dasha analysis, and life forecasts',
+    icon: 'crystal-ball',
+    displayOrder: 7,
+    isActive: true
+  },
+  {
+    name: 'Numerology & Palmistry',
+    description: 'Numerology readings, palmistry, and alternative divination methods',
+    icon: 'hand',
+    displayOrder: 8,
+    isActive: true
+  }
+];
+
+const servicesData = [
+  // Kundli & Birth Chart Services
+  {
+    name: 'Complete Birth Chart Analysis',
+    description: 'Comprehensive analysis of your complete birth chart including all planets, houses, and aspects. Get detailed insights into your personality, strengths, weaknesses, and life path.',
+    shortDescription: 'Complete birth chart analysis with detailed planetary positions',
+    price: '999.00', // ₹999
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '24-48 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Complete planetary position analysis',
+      'House-wise interpretation',
+      'Planetary aspects and conjunctions',
+      'Dasha periods overview',
+      'PDF report with charts',
+      'Lifetime access to report'
+    ],
+    requirements: [
+      'Date of birth',
+      'Time of birth (exact)',
+      'Place of birth (city, state, country)'
+    ],
+    tags: ['kundli', 'birth-chart', 'natal-chart', 'vedic-astrology'],
+    isFeatured: true,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  {
+    name: 'Basic Kundli Report',
+    description: 'Essential Kundli report with basic planetary positions, sun sign, moon sign, and ascendant details.',
+    shortDescription: 'Basic Kundli with essential planetary information',
+    price: '299.00', // ₹299
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '12-24 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Sun, Moon, and Ascendant signs',
+      'Basic planetary positions',
+      'Simple chart visualization',
+      'PDF report'
+    ],
+    requirements: [
+      'Date of birth',
+      'Time of birth',
+      'Place of birth'
+    ],
+    tags: ['kundli', 'basic', 'birth-chart'],
+    isFeatured: false,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  {
+    name: 'Dasha & Antardasha Analysis',
+    description: 'Detailed analysis of your current and upcoming dasha periods. Understand the planetary influences affecting different phases of your life.',
+    shortDescription: 'Complete dasha period analysis and predictions',
+    price: '799.00', // ₹799
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '24-48 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Current dasha analysis',
+      'Upcoming dasha predictions',
+      'Planetary period effects',
+      'Remedial suggestions',
+      'Detailed PDF report'
+    ],
+    requirements: [
+      'Complete birth details',
+      'Current concerns or questions'
+    ],
+    tags: ['dasha', 'predictions', 'vedic-astrology'],
+    isFeatured: true,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  
+  // Marriage & Compatibility Services
+  {
+    name: 'Marriage Compatibility Report (Guna Milan)',
+    description: 'Complete marriage compatibility analysis using Vedic astrology. Get detailed Guna Milan score and compatibility analysis for you and your partner.',
+    shortDescription: 'Complete marriage compatibility with Guna Milan',
+    price: '1299.00', // ₹1299
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '24-48 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Complete Guna Milan (36 points)',
+      'Ashtakoot matching',
+      'Mangal Dosha analysis',
+      'Planetary compatibility',
+      'Remedial suggestions',
+      'Detailed PDF report'
+    ],
+    requirements: [
+      'Both partners birth details',
+      'Date, time, place for both'
+    ],
+    tags: ['marriage', 'compatibility', 'guna-milan', 'matchmaking'],
+    isFeatured: true,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  {
+    name: 'Love Compatibility Analysis',
+    description: 'Understand your romantic compatibility with your partner. Get insights into emotional connection, communication, and relationship dynamics.',
+    shortDescription: 'Romantic relationship compatibility analysis',
+    price: '599.00', // ₹599
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '24 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Emotional compatibility',
+      'Communication analysis',
+      'Love and romance insights',
+      'Relationship challenges and solutions',
+      'PDF report'
+    ],
+    requirements: [
+      'Both partners birth details'
+    ],
+    tags: ['love', 'relationship', 'compatibility'],
+    isFeatured: false,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  {
+    name: 'Mangal Dosha Analysis & Remedies',
+    description: 'Detailed Mangal Dosha analysis and effective remedies. Understand if you or your partner have Mangal Dosha and how to neutralize its effects.',
+    shortDescription: 'Mangal Dosha analysis with remedies',
+    price: '899.00', // ₹899
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '24-48 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Mangal Dosha identification',
+      'Severity analysis',
+      'Remedial measures',
+      'Gemstone recommendations',
+      'Puja and rituals',
+      'Detailed PDF report'
+    ],
+    requirements: [
+      'Complete birth details'
+    ],
+    tags: ['mangal-dosha', 'remedies', 'marriage'],
+    isFeatured: false,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  
+  // Career & Business Services
+  {
+    name: 'Career Guidance Report',
+    description: 'Comprehensive career guidance based on your birth chart. Discover your ideal career path, suitable professions, and timing for career changes.',
+    shortDescription: 'Complete career guidance and profession analysis',
+    price: '1199.00', // ₹1199
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '24-48 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Ideal career paths',
+      'Suitable professions',
+      'Career timing analysis',
+      'Obstacles and solutions',
+      'Remedial measures',
+      'Detailed PDF report'
+    ],
+    requirements: [
+      'Complete birth details',
+      'Current career status'
+    ],
+    tags: ['career', 'profession', 'guidance'],
+    isFeatured: true,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  {
+    name: 'Business Astrology Consultation',
+    description: 'Get astrological guidance for your business decisions. Understand favorable times for starting business, partnerships, and important business moves.',
+    shortDescription: 'Business decisions and timing guidance',
+    price: '1499.00', // ₹1499
+    currency: 'INR',
+    duration: '1 consultation + report',
+    deliveryTime: '48-72 hours',
+    serviceType: 'consultation',
+    isDigital: true,
+    features: [
+      'Business timing analysis',
+      'Partnership compatibility',
+      'Financial prospects',
+      'Remedial measures',
+      'Detailed consultation report'
+    ],
+    requirements: [
+      'Complete birth details',
+      'Business details and questions'
+    ],
+    tags: ['business', 'entrepreneurship', 'finance'],
+    isFeatured: true,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  {
+    name: 'Job Change Timing Analysis',
+    description: 'Know the best time to change your job or switch careers. Get astrological insights into favorable periods for job changes and career growth.',
+    shortDescription: 'Best timing for job change and career switch',
+    price: '699.00', // ₹699
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '24 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Favorable periods for job change',
+      'Career transition timing',
+      'Obstacles and solutions',
+      'Remedial suggestions',
+      'PDF report'
+    ],
+    requirements: [
+      'Complete birth details',
+      'Current job situation'
+    ],
+    tags: ['career', 'job-change', 'timing'],
+    isFeatured: false,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  
+  // Remedies & Solutions Services
+  {
+    name: 'Gemstone Recommendation Report',
+    description: 'Personalized gemstone recommendations based on your birth chart. Get detailed analysis of which gemstones will benefit you and how to wear them.',
+    shortDescription: 'Personalized gemstone recommendations',
+    price: '999.00', // ₹999
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '24-48 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Planetary gemstone analysis',
+      'Suitable gemstones list',
+      'Wearing instructions',
+      'Quality and size recommendations',
+      'Activation rituals',
+      'Detailed PDF report'
+    ],
+    requirements: [
+      'Complete birth details',
+      'Current concerns'
+    ],
+    tags: ['gemstones', 'remedies', 'ratna'],
+    isFeatured: true,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  {
+    name: 'Rudraksha & Yantra Consultation',
+    description: 'Get recommendations for Rudraksha beads and Yantras based on your birth chart. Understand which Rudraksha and Yantra will help balance your planetary energies.',
+    shortDescription: 'Rudraksha and Yantra recommendations',
+    price: '799.00', // ₹799
+    currency: 'INR',
+    duration: '1 consultation',
+    deliveryTime: '24-48 hours',
+    serviceType: 'consultation',
+    isDigital: true,
+    features: [
+      'Rudraksha recommendations',
+      'Yantra selection',
+      'Wearing and placement instructions',
+      'Activation procedures',
+      'Detailed PDF guide'
+    ],
+    requirements: [
+      'Complete birth details'
+    ],
+    tags: ['rudraksha', 'yantra', 'remedies'],
+    isFeatured: false,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  {
+    name: 'Puja & Ritual Recommendations',
+    description: 'Get personalized puja and ritual recommendations to balance planetary energies and remove obstacles from your life.',
+    shortDescription: 'Personalized puja and ritual suggestions',
+    price: '599.00', // ₹599
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '24 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Recommended pujas',
+      'Ritual procedures',
+      'Auspicious dates',
+      'Mantra suggestions',
+      'Detailed PDF guide'
+    ],
+    requirements: [
+      'Complete birth details',
+      'Specific concerns'
+    ],
+    tags: ['puja', 'rituals', 'remedies'],
+    isFeatured: false,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  
+  // Health & Medical Services
+  {
+    name: 'Health Astrology Report',
+    description: 'Understand your health prospects through astrology. Get insights into potential health issues, preventive measures, and timing for medical procedures.',
+    shortDescription: 'Health analysis and medical astrology',
+    price: '899.00', // ₹899
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '24-48 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Health prospects analysis',
+      'Vulnerable body parts',
+      'Preventive measures',
+      'Medical procedure timing',
+      'Remedial suggestions',
+      'Detailed PDF report'
+    ],
+    requirements: [
+      'Complete birth details',
+      'Current health concerns (optional)'
+    ],
+    tags: ['health', 'medical-astrology', 'wellness'],
+    isFeatured: false,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  {
+    name: 'Medical Procedure Muhurat',
+    description: 'Get the best auspicious time for medical procedures, surgeries, and treatments based on your birth chart.',
+    shortDescription: 'Auspicious timing for medical procedures',
+    price: '499.00', // ₹499
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '12-24 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Auspicious dates and times',
+      'Avoid dates',
+      'Planetary influences',
+      'Remedial measures',
+      'PDF report'
+    ],
+    requirements: [
+      'Complete birth details',
+      'Procedure type and urgency'
+    ],
+    tags: ['health', 'muhurat', 'medical'],
+    isFeatured: false,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  
+  // Muhurat & Timing Services
+  {
+    name: 'Marriage Muhurat Selection',
+    description: 'Get the most auspicious date and time for your wedding ceremony. Detailed muhurat analysis for a successful and harmonious married life.',
+    shortDescription: 'Auspicious wedding date and time selection',
+    price: '1499.00', // ₹1499
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '48-72 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Multiple auspicious dates',
+      'Best time slots',
+      'Avoid dates',
+      'Planetary influences',
+      'Remedial suggestions',
+      'Detailed PDF report'
+    ],
+    requirements: [
+      'Both partners birth details',
+      'Preferred month/year',
+      'Venue location'
+    ],
+    tags: ['marriage', 'muhurat', 'wedding'],
+    isFeatured: true,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  {
+    name: 'House Warming Muhurat',
+    description: 'Get the best auspicious time for house warming, moving into a new home, or Griha Pravesh ceremony.',
+    shortDescription: 'Auspicious timing for house warming',
+    price: '699.00', // ₹699
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '24-48 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Auspicious dates and times',
+      'Avoid dates',
+      'Ritual procedures',
+      'Remedial measures',
+      'PDF report'
+    ],
+    requirements: [
+      'Complete birth details',
+      'New address',
+      'Preferred month'
+    ],
+    tags: ['house-warming', 'griha-pravesh', 'muhurat'],
+    isFeatured: false,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  {
+    name: 'Business Inauguration Muhurat',
+    description: 'Select the most auspicious time for starting a new business, opening a shop, or launching a venture.',
+    shortDescription: 'Auspicious timing for business inauguration',
+    price: '999.00', // ₹999
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '24-48 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Auspicious dates and times',
+      'Avoid dates',
+      'Business type analysis',
+      'Remedial measures',
+      'PDF report'
+    ],
+    requirements: [
+      'Complete birth details',
+      'Business type',
+      'Preferred month'
+    ],
+    tags: ['business', 'muhurat', 'inauguration'],
+    isFeatured: false,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  
+  // Predictions & Forecasts Services
+  {
+    name: 'Yearly Horoscope & Predictions',
+    description: 'Complete yearly predictions for all aspects of your life including career, finance, health, relationships, and more.',
+    shortDescription: 'Complete yearly predictions and forecast',
+    price: '1299.00', // ₹1299
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '48-72 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Yearly predictions',
+      'Month-wise forecasts',
+      'Career and finance',
+      'Health and relationships',
+      'Remedial measures',
+      'Detailed PDF report'
+    ],
+    requirements: [
+      'Complete birth details'
+    ],
+    tags: ['predictions', 'yearly', 'forecast'],
+    isFeatured: true,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  {
+    name: 'Monthly Predictions Report',
+    description: 'Get detailed monthly predictions for the upcoming month. Understand what the stars have in store for you.',
+    shortDescription: 'Detailed monthly predictions',
+    price: '399.00', // ₹399
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '24 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Monthly predictions',
+      'Week-wise forecasts',
+      'Important dates',
+      'Remedial suggestions',
+      'PDF report'
+    ],
+    requirements: [
+      'Complete birth details',
+      'Month of interest'
+    ],
+    tags: ['predictions', 'monthly', 'forecast'],
+    isFeatured: false,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  
+  // Numerology & Palmistry Services
+  {
+    name: 'Complete Numerology Report',
+    description: 'Comprehensive numerology analysis including life path number, destiny number, name analysis, and lucky numbers.',
+    shortDescription: 'Complete numerology analysis and readings',
+    price: '799.00', // ₹799
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '24-48 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Life path number',
+      'Destiny number',
+      'Name analysis',
+      'Lucky numbers and dates',
+      'Career and relationship insights',
+      'Detailed PDF report'
+    ],
+    requirements: [
+      'Date of birth',
+      'Full name (as per birth certificate)'
+    ],
+    tags: ['numerology', 'numbers', 'name-analysis'],
+    isFeatured: false,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  {
+    name: 'Palmistry Reading',
+    description: 'Get detailed palmistry analysis through photos. Understand your life line, heart line, career prospects, and more.',
+    shortDescription: 'Complete palmistry reading and analysis',
+    price: '599.00', // ₹599
+    currency: 'INR',
+    duration: '1 consultation',
+    deliveryTime: '24-48 hours',
+    serviceType: 'consultation',
+    isDigital: true,
+    features: [
+      'Life line analysis',
+      'Heart line reading',
+      'Career and finance lines',
+      'Health indicators',
+      'Relationship insights',
+      'Detailed PDF report'
+    ],
+    requirements: [
+      'Clear photos of both palms',
+      'Date of birth'
+    ],
+    tags: ['palmistry', 'hand-reading', 'hast-rekha'],
+    isFeatured: false,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  },
+  {
+    name: 'Name Correction & Suggestions',
+    description: 'Get numerology-based name correction suggestions. Find the perfect name that aligns with your birth chart and numerology.',
+    shortDescription: 'Name correction based on numerology',
+    price: '999.00', // ₹999
+    currency: 'INR',
+    duration: '1 report',
+    deliveryTime: '24-48 hours',
+    serviceType: 'report',
+    isDigital: true,
+    features: [
+      'Current name analysis',
+      'Name correction suggestions',
+      'Multiple name options',
+      'Numerology compatibility',
+      'Astrological alignment',
+      'Detailed PDF report'
+    ],
+    requirements: [
+      'Date of birth',
+      'Current name',
+      'Purpose (child/new name)'
+    ],
+    tags: ['numerology', 'name-correction', 'naming'],
+    isFeatured: false,
+    thumbnailUrl: '/attached_assets/generated_images/jml.png'
+  }
+];
+
 async function seedDatabase() {
   const client = await pool.connect();
   
@@ -503,6 +1142,120 @@ async function seedDatabase() {
         ]);
         
         console.log(`  ✓ Added blog post: ${post.title}`);
+      }
+    }
+    
+    // Seed Service Categories
+    const categoryCheck = await client.query('SELECT COUNT(*) FROM service_categories');
+    const categoryCount = parseInt(categoryCheck.rows[0].count);
+    
+    let categoryIds = [];
+    
+    if (categoryCount > 0) {
+      console.log(`\nFound ${categoryCount} existing service categories. Skipping category seeding.`);
+      const existingCategories = await client.query('SELECT id, name FROM service_categories ORDER BY display_order');
+      categoryIds = existingCategories.rows;
+    } else {
+      console.log('\nSeeding service categories...');
+      for (const category of serviceCategoriesData) {
+        const insertQuery = `
+          INSERT INTO service_categories (
+            name, description, icon, display_order, is_active, created_at
+          ) VALUES ($1, $2, $3, $4, $5, NOW())
+          RETURNING id, name
+        `;
+        
+        const result = await client.query(insertQuery, [
+          category.name,
+          category.description,
+          category.icon,
+          category.displayOrder,
+          category.isActive
+        ]);
+        
+        categoryIds.push({ id: result.rows[0].id, name: result.rows[0].name });
+        console.log(`  ✓ Added category: ${category.name} (ID: ${result.rows[0].id})`);
+      }
+    }
+    
+    // Create a map of category names to IDs for easy lookup
+    const categoryMap = {};
+    if (categoryIds.length === 0) {
+      const allCategories = await client.query('SELECT id, name FROM service_categories');
+      categoryIds = allCategories.rows;
+    }
+    categoryIds.forEach(cat => {
+      categoryMap[cat.name] = cat.id;
+    });
+    
+    // Map services to categories
+    const categoryMapping = {
+      'Kundli & Birth Chart': ['Complete Birth Chart Analysis', 'Basic Kundli Report', 'Dasha & Antardasha Analysis'],
+      'Marriage & Compatibility': ['Marriage Compatibility Report (Guna Milan)', 'Love Compatibility Analysis', 'Mangal Dosha Analysis & Remedies'],
+      'Career & Business': ['Career Guidance Report', 'Business Astrology Consultation', 'Job Change Timing Analysis'],
+      'Remedies & Solutions': ['Gemstone Recommendation Report', 'Rudraksha & Yantra Consultation', 'Puja & Ritual Recommendations'],
+      'Health & Medical': ['Health Astrology Report', 'Medical Procedure Muhurat'],
+      'Muhurat & Timing': ['Marriage Muhurat Selection', 'House Warming Muhurat', 'Business Inauguration Muhurat'],
+      'Predictions & Forecasts': ['Yearly Horoscope & Predictions', 'Monthly Predictions Report'],
+      'Numerology & Palmistry': ['Complete Numerology Report', 'Palmistry Reading', 'Name Correction & Suggestions']
+    };
+    
+    // Seed Services
+    const serviceCheck = await client.query('SELECT COUNT(*) FROM services');
+    const serviceCount = parseInt(serviceCheck.rows[0].count);
+    
+    if (serviceCount > 0) {
+      console.log(`\nFound ${serviceCount} existing services. Skipping service seeding.`);
+    } else {
+      console.log('\nSeeding services...');
+      for (const service of servicesData) {
+        // Find the category for this service
+        let categoryId = null;
+        for (const [categoryName, serviceNames] of Object.entries(categoryMapping)) {
+          if (serviceNames.includes(service.name)) {
+            categoryId = categoryMap[categoryName];
+            break;
+          }
+        }
+        
+        // Fallback to first category if not found
+        if (!categoryId && categoryIds.length > 0) {
+          categoryId = categoryIds[0].id;
+        }
+        
+        if (!categoryId) {
+          console.log(`  ⚠ Skipping service ${service.name} - no category found`);
+          continue;
+        }
+        
+        const insertQuery = `
+          INSERT INTO services (
+            category_id, name, description, short_description, price, currency,
+            duration, delivery_time, service_type, is_digital, features, requirements,
+            tags, is_active, is_featured, thumbnail_url, created_at, updated_at
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW(), NOW())
+        `;
+        
+        await client.query(insertQuery, [
+          categoryId,
+          service.name,
+          service.description,
+          service.shortDescription,
+          service.price,
+          service.currency,
+          service.duration,
+          service.deliveryTime,
+          service.serviceType,
+          service.isDigital,
+          service.features,
+          service.requirements,
+          service.tags,
+          true, // is_active
+          service.isFeatured,
+          service.thumbnailUrl
+        ]);
+        
+        console.log(`  ✓ Added service: ${service.name} (₹${service.price})`);
       }
     }
     
