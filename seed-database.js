@@ -1210,41 +1210,53 @@ async function seedDatabase() {
     
     console.log('Starting database seeding...\n');
     
-    // Check if astrologers already exist
-    const astrologerCheck = await client.query('SELECT COUNT(*) FROM astrologers');
-    const astrologerCount = parseInt(astrologerCheck.rows[0].count);
+    // Seed astrologers - check by email to avoid duplicates
+    console.log('Seeding astrologers...');
+    let addedCount = 0;
+    let skippedCount = 0;
     
-    if (astrologerCount > 0) {
-      console.log(`Found ${astrologerCount} existing astrologers. Skipping astrologer seeding.`);
-    } else {
-      console.log('Seeding astrologers...');
-      for (const astrologer of astrologersData) {
-        const insertQuery = `
-          INSERT INTO astrologers (
-            name, email, profile_image_url, specialization, languages,
-            experience, rating, review_count, price_per_minute,
-            is_online, status, bio, created_at, updated_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW())
-          RETURNING id
-        `;
-        
-        const result = await client.query(insertQuery, [
-          astrologer.name,
-          astrologer.email,
-          astrologer.profileImageUrl,
-          astrologer.specialization,
-          astrologer.languages,
-          astrologer.experience,
-          astrologer.rating,
-          astrologer.reviewCount,
-          astrologer.pricePerMinute,
-          astrologer.isOnline,
-          astrologer.status,
-          astrologer.bio
-        ]);
-        
-        console.log(`  ✓ Added astrologer: ${astrologer.name} (ID: ${result.rows[0].id})`);
+    for (const astrologer of astrologersData) {
+      // Check if astrologer with this email already exists
+      const existingCheck = await client.query('SELECT id FROM astrologers WHERE email = $1', [astrologer.email]);
+      
+      if (existingCheck.rows.length > 0) {
+        console.log(`  ⊘ Skipped (exists): ${astrologer.name}`);
+        skippedCount++;
+        continue;
       }
+      
+      const insertQuery = `
+        INSERT INTO astrologers (
+          name, email, profile_image_url, specialization, languages,
+          experience, rating, review_count, price_per_minute,
+          is_online, status, bio, created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW())
+        RETURNING id
+      `;
+      
+      const result = await client.query(insertQuery, [
+        astrologer.name,
+        astrologer.email,
+        astrologer.profileImageUrl,
+        astrologer.specialization,
+        astrologer.languages,
+        astrologer.experience,
+        astrologer.rating,
+        astrologer.reviewCount,
+        astrologer.pricePerMinute,
+        astrologer.isOnline,
+        astrologer.status,
+        astrologer.bio
+      ]);
+      
+      console.log(`  ✓ Added astrologer: ${astrologer.name} (ID: ${result.rows[0].id})`);
+      addedCount++;
+    }
+    
+    if (addedCount > 0) {
+      console.log(`\n  Summary: Added ${addedCount} new astrologer(s), skipped ${skippedCount} existing.`);
+    } else {
+      console.log(`\n  All astrologers already exist. Skipped ${skippedCount}.`);
     }
     
     // Get astrologer IDs for blog posts
