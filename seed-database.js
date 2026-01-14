@@ -97,6 +97,146 @@ const astrologersData = [
     isOnline: false,
     status: 'available',
     bio: 'Expert in health and medical astrology. Provides insights into health issues through dasha analysis and planetary positions. Consultation: ₹28/min'
+  },
+  {
+    name: 'Pandit Ramesh Joshi',
+    email: 'ramesh.joshi@jmlastrology.com',
+    profileImageUrl: '/attached_assets/generated_images/male2.png',
+    specialization: ['Vedic Astrology', 'Kundli Making', 'Planetary Remedies'],
+    languages: ['Hindi', 'English', 'Marathi'],
+    experience: 20,
+    rating: '4.8',
+    reviewCount: 312,
+    pricePerMinute: '40.00', // ₹40 per minute
+    isOnline: true,
+    status: 'available',
+    bio: 'Expert Vedic astrologer with 20 years of experience in Kundli making and planetary remedy solutions. Consultation: ₹40/min'
+  },
+  {
+    name: 'Acharya Kavita Reddy',
+    email: 'kavita.reddy@jmlastrology.com',
+    profileImageUrl: '/attached_assets/generated_images/female3.png',
+    specialization: ['Marriage Matching', 'Guna Milan', 'Mangal Dosha Remedies'],
+    languages: ['Hindi', 'English', 'Telugu'],
+    experience: 16,
+    rating: '4.9',
+    reviewCount: 267,
+    pricePerMinute: '32.00', // ₹32 per minute
+    isOnline: true,
+    status: 'available',
+    bio: 'Specialized in marriage compatibility analysis and Mangal Dosha remedies. Expert in Guna Milan and relationship counseling. Consultation: ₹32/min'
+  },
+  {
+    name: 'Swami Narayan Das',
+    email: 'narayan.das@jmlastrology.com',
+    profileImageUrl: '/attached_assets/generated_images/male3.png',
+    specialization: ['Spiritual Astrology', 'Remedial Astrology', 'Mantra & Yantra'],
+    languages: ['Hindi', 'Sanskrit', 'Bengali'],
+    experience: 22,
+    rating: '4.7',
+    reviewCount: 389,
+    pricePerMinute: '38.00', // ₹38 per minute
+    isOnline: false,
+    status: 'available',
+    bio: 'Spiritual astrologer with expertise in remedial astrology, mantra chanting, and yantra recommendations. Consultation: ₹38/min'
+  },
+  {
+    name: 'Dr. Sneha Patel',
+    email: 'sneha.patel@jmlastrology.com',
+    profileImageUrl: '/attached_assets/generated_images/female4.png',
+    specialization: ['Career Astrology', 'Education Guidance', 'Job Prospects'],
+    languages: ['English', 'Hindi', 'Gujarati'],
+    experience: 11,
+    rating: '4.6',
+    reviewCount: 198,
+    pricePerMinute: '26.00', // ₹26 per minute
+    isOnline: true,
+    status: 'available',
+    bio: 'Career and education astrology specialist helping students and professionals make informed career decisions. Consultation: ₹26/min'
+  },
+  {
+    name: 'Pandit Suresh Tiwari',
+    email: 'suresh.tiwari@jmlastrology.com',
+    profileImageUrl: '/attached_assets/generated_images/male4.png',
+    specialization: ['Financial Astrology', 'Wealth Remedies', 'Property Astrology'],
+    languages: ['Hindi', 'English'],
+    experience: 19,
+    rating: '4.8',
+    reviewCount: 345,
+    pricePerMinute: '36.00', // ₹36 per minute
+    isOnline: true,
+    status: 'available',
+    bio: 'Financial astrology expert providing guidance on wealth, investments, and property matters. Consultation: ₹36/min'
+  },
+  {
+    name: 'Acharya Radha Krishnan',
+    email: 'radha.krishnan@jmlastrology.com',
+    profileImageUrl: '/attached_assets/generated_images/female5.png',
+    specialization: ['Child Astrology', 'Education Muhurat', 'Name Selection'],
+    languages: ['Hindi', 'English', 'Tamil', 'Malayalam'],
+    experience: 13,
+    rating: '4.7',
+    reviewCount: 223,
+    pricePerMinute: '29.00', // ₹29 per minute
+    isOnline: true,
+    status: 'available',
+    bio: 'Specialized in child astrology, education guidance, and name selection for newborns. Consultation: ₹29/min'
+  },
+  {
+    name: 'Pandit Arjun Malhotra',
+    email: 'arjun.malhotra@jmlastrology.com',
+    profileImageUrl: '/attached_assets/generated_images/Young_Indian_astrologer_portrait_ebf342cd.png',
+    specialization: ['Modern Astrology', 'Western Astrology', 'Relationship Counseling'],
+    languages: ['English', 'Hindi', 'Punjabi'],
+    experience: 8,
+    rating: '4.5',
+    reviewCount: 145,
+    pricePerMinute: '22.00', // ₹22 per minute
+    isOnline: true,
+    status: 'available',
+    bio: 'Modern astrologer combining Vedic and Western astrology techniques. Specializes in relationship counseling and modern life challenges. Consultation: ₹22/min'
+  },
+  {
+    name: 'Acharya Sunita Verma',
+    email: 'sunita.verma@jmlastrology.com',
+    profileImageUrl: '/attached_assets/generated_images/female7.jpg',
+    specialization: ['Vastu Shastra', 'Feng Shui', 'Home Remedies'],
+    languages: ['Hindi', 'English'],
+    experience: 17,
+    rating: '4.8',
+    reviewCount: 278,
+    pricePerMinute: '33.00', // ₹33 per minute
+    isOnline: false,
+    status: 'available',
+    bio: 'Vastu and Feng Shui expert helping create harmonious living and working spaces. Consultation: ₹33/min'
+  },
+  {
+    name: 'Pandit Deepak Sharma',
+    email: 'deepak.sharma@jmlastrology.com',
+    profileImageUrl: '/attached_assets/generated_images/male8.jpg',
+    specialization: ['Remedial Astrology', 'Puja Services', 'Gemstone Consultation'],
+    languages: ['Hindi', 'English', 'Rajasthani'],
+    experience: 21,
+    rating: '4.9',
+    reviewCount: 401,
+    pricePerMinute: '42.00', // ₹42 per minute
+    isOnline: true,
+    status: 'available',
+    bio: 'Senior remedial astrologer with expertise in puja services, gemstone recommendations, and effective astrological remedies. Consultation: ₹42/min'
+  },
+  {
+    name: 'Dr. Priyanka Nair',
+    email: 'priyanka.nair@jmlastrology.com',
+    profileImageUrl: '/attached_assets/generated_images/female8.png',
+    specialization: ['Medical Astrology', 'Health Remedies', 'Wellness Guidance'],
+    languages: ['English', 'Hindi', 'Malayalam', 'Tamil'],
+    experience: 12,
+    rating: '4.7',
+    reviewCount: 189,
+    pricePerMinute: '27.00', // ₹27 per minute
+    isOnline: true,
+    status: 'available',
+    bio: 'Medical astrology specialist providing health insights and wellness guidance through astrological analysis. Consultation: ₹27/min'
   }
 ];
 
@@ -488,7 +628,7 @@ const servicesData = [
     name: 'Complete Birth Chart Analysis',
     description: 'Comprehensive analysis of your complete birth chart including all planets, houses, and aspects. Get detailed insights into your personality, strengths, weaknesses, and life path.',
     shortDescription: 'Complete birth chart analysis with detailed planetary positions',
-    price: '999.00', // ₹999
+    price: '1000.00', // ₹1000
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '24-48 hours',
@@ -515,7 +655,7 @@ const servicesData = [
     name: 'Basic Kundli Report',
     description: 'Essential Kundli report with basic planetary positions, sun sign, moon sign, and ascendant details.',
     shortDescription: 'Basic Kundli with essential planetary information',
-    price: '299.00', // ₹299
+    price: '300.00', // ₹300
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '12-24 hours',
@@ -540,7 +680,7 @@ const servicesData = [
     name: 'Dasha & Antardasha Analysis',
     description: 'Detailed analysis of your current and upcoming dasha periods. Understand the planetary influences affecting different phases of your life.',
     shortDescription: 'Complete dasha period analysis and predictions',
-    price: '799.00', // ₹799
+    price: '800.00', // ₹800
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '24-48 hours',
@@ -567,7 +707,7 @@ const servicesData = [
     name: 'Marriage Compatibility Report (Guna Milan)',
     description: 'Complete marriage compatibility analysis using Vedic astrology. Get detailed Guna Milan score and compatibility analysis for you and your partner.',
     shortDescription: 'Complete marriage compatibility with Guna Milan',
-    price: '1299.00', // ₹1299
+    price: '1300.00', // ₹1300
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '24-48 hours',
@@ -593,7 +733,7 @@ const servicesData = [
     name: 'Love Compatibility Analysis',
     description: 'Understand your romantic compatibility with your partner. Get insights into emotional connection, communication, and relationship dynamics.',
     shortDescription: 'Romantic relationship compatibility analysis',
-    price: '599.00', // ₹599
+    price: '600.00', // ₹600
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '24 hours',
@@ -617,7 +757,7 @@ const servicesData = [
     name: 'Mangal Dosha Analysis & Remedies',
     description: 'Detailed Mangal Dosha analysis and effective remedies. Understand if you or your partner have Mangal Dosha and how to neutralize its effects.',
     shortDescription: 'Mangal Dosha analysis with remedies',
-    price: '899.00', // ₹899
+    price: '900.00', // ₹900
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '24-48 hours',
@@ -644,7 +784,7 @@ const servicesData = [
     name: 'Career Guidance Report',
     description: 'Comprehensive career guidance based on your birth chart. Discover your ideal career path, suitable professions, and timing for career changes.',
     shortDescription: 'Complete career guidance and profession analysis',
-    price: '1199.00', // ₹1199
+    price: '1200.00', // ₹1200
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '24-48 hours',
@@ -670,7 +810,7 @@ const servicesData = [
     name: 'Business Astrology Consultation',
     description: 'Get astrological guidance for your business decisions. Understand favorable times for starting business, partnerships, and important business moves.',
     shortDescription: 'Business decisions and timing guidance',
-    price: '1499.00', // ₹1499
+    price: '1500.00', // ₹1500
     currency: 'INR',
     duration: '1 consultation + report',
     deliveryTime: '48-72 hours',
@@ -695,7 +835,7 @@ const servicesData = [
     name: 'Job Change Timing Analysis',
     description: 'Know the best time to change your job or switch careers. Get astrological insights into favorable periods for job changes and career growth.',
     shortDescription: 'Best timing for job change and career switch',
-    price: '699.00', // ₹699
+    price: '700.00', // ₹700
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '24 hours',
@@ -722,7 +862,7 @@ const servicesData = [
     name: 'Gemstone Recommendation Report',
     description: 'Personalized gemstone recommendations based on your birth chart. Get detailed analysis of which gemstones will benefit you and how to wear them.',
     shortDescription: 'Personalized gemstone recommendations',
-    price: '999.00', // ₹999
+    price: '1000.00', // ₹1000
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '24-48 hours',
@@ -748,7 +888,7 @@ const servicesData = [
     name: 'Rudraksha & Yantra Consultation',
     description: 'Get recommendations for Rudraksha beads and Yantras based on your birth chart. Understand which Rudraksha and Yantra will help balance your planetary energies.',
     shortDescription: 'Rudraksha and Yantra recommendations',
-    price: '799.00', // ₹799
+    price: '800.00', // ₹800
     currency: 'INR',
     duration: '1 consultation',
     deliveryTime: '24-48 hours',
@@ -772,7 +912,7 @@ const servicesData = [
     name: 'Puja & Ritual Recommendations',
     description: 'Get personalized puja and ritual recommendations to balance planetary energies and remove obstacles from your life.',
     shortDescription: 'Personalized puja and ritual suggestions',
-    price: '599.00', // ₹599
+    price: '600.00', // ₹600
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '24 hours',
@@ -799,7 +939,7 @@ const servicesData = [
     name: 'Health Astrology Report',
     description: 'Understand your health prospects through astrology. Get insights into potential health issues, preventive measures, and timing for medical procedures.',
     shortDescription: 'Health analysis and medical astrology',
-    price: '899.00', // ₹899
+    price: '900.00', // ₹900
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '24-48 hours',
@@ -825,7 +965,7 @@ const servicesData = [
     name: 'Medical Procedure Muhurat',
     description: 'Get the best auspicious time for medical procedures, surgeries, and treatments based on your birth chart.',
     shortDescription: 'Auspicious timing for medical procedures',
-    price: '499.00', // ₹499
+    price: '500.00', // ₹500
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '12-24 hours',
@@ -852,7 +992,7 @@ const servicesData = [
     name: 'Marriage Muhurat Selection',
     description: 'Get the most auspicious date and time for your wedding ceremony. Detailed muhurat analysis for a successful and harmonious married life.',
     shortDescription: 'Auspicious wedding date and time selection',
-    price: '1499.00', // ₹1499
+    price: '1500.00', // ₹1500
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '48-72 hours',
@@ -879,7 +1019,7 @@ const servicesData = [
     name: 'House Warming Muhurat',
     description: 'Get the best auspicious time for house warming, moving into a new home, or Griha Pravesh ceremony.',
     shortDescription: 'Auspicious timing for house warming',
-    price: '699.00', // ₹699
+    price: '700.00', // ₹700
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '24-48 hours',
@@ -905,7 +1045,7 @@ const servicesData = [
     name: 'Business Inauguration Muhurat',
     description: 'Select the most auspicious time for starting a new business, opening a shop, or launching a venture.',
     shortDescription: 'Auspicious timing for business inauguration',
-    price: '999.00', // ₹999
+    price: '1000.00', // ₹1000
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '24-48 hours',
@@ -933,7 +1073,7 @@ const servicesData = [
     name: 'Yearly Horoscope & Predictions',
     description: 'Complete yearly predictions for all aspects of your life including career, finance, health, relationships, and more.',
     shortDescription: 'Complete yearly predictions and forecast',
-    price: '1299.00', // ₹1299
+    price: '1300.00', // ₹1300
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '48-72 hours',
@@ -958,7 +1098,7 @@ const servicesData = [
     name: 'Monthly Predictions Report',
     description: 'Get detailed monthly predictions for the upcoming month. Understand what the stars have in store for you.',
     shortDescription: 'Detailed monthly predictions',
-    price: '399.00', // ₹399
+    price: '400.00', // ₹400
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '24 hours',
@@ -985,7 +1125,7 @@ const servicesData = [
     name: 'Complete Numerology Report',
     description: 'Comprehensive numerology analysis including life path number, destiny number, name analysis, and lucky numbers.',
     shortDescription: 'Complete numerology analysis and readings',
-    price: '799.00', // ₹799
+    price: '800.00', // ₹800
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '24-48 hours',
@@ -1011,7 +1151,7 @@ const servicesData = [
     name: 'Palmistry Reading',
     description: 'Get detailed palmistry analysis through photos. Understand your life line, heart line, career prospects, and more.',
     shortDescription: 'Complete palmistry reading and analysis',
-    price: '599.00', // ₹599
+    price: '600.00', // ₹600
     currency: 'INR',
     duration: '1 consultation',
     deliveryTime: '24-48 hours',
@@ -1037,7 +1177,7 @@ const servicesData = [
     name: 'Name Correction & Suggestions',
     description: 'Get numerology-based name correction suggestions. Find the perfect name that aligns with your birth chart and numerology.',
     shortDescription: 'Name correction based on numerology',
-    price: '999.00', // ₹999
+    price: '1000.00', // ₹1000
     currency: 'INR',
     duration: '1 report',
     deliveryTime: '24-48 hours',
