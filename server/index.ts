@@ -3,11 +3,10 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
 import { fileURLToPath } from "url";
-import { dirname } from "path";
 
+// Compute __dirname in a Node-ESM-safe way so it survives bundling
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json());
@@ -45,12 +44,12 @@ app.use((req, res, next) => {
 
 (async () => {
   // Serve static images from attached_assets/generated_images
-  const imagesPath = path.resolve(import.meta.dirname, "..", "attached_assets", "generated_images");
+  const imagesPath = path.resolve(__dirname, "..", "attached_assets", "generated_images");
   app.use("/api/images", express.static(imagesPath));
   log(`Serving static images from: ${imagesPath}`);
 
   // Serve static assets from attached_assets
-  const assetsPath = path.resolve(import.meta.dirname, "..", "attached_assets");
+  const assetsPath = path.resolve(__dirname, "..", "attached_assets");
   app.use("/attached_assets", express.static(assetsPath));
   log(`Serving static assets from: ${assetsPath}`);
 
