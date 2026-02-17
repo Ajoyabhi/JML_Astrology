@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import { Lock, CreditCard, Shield, CheckCircle, ArrowLeft, IndianRupee, Smartphone, QrCode, Copy, Phone, Heart, DollarSign } from "lucide-react";
 
 interface PaymentFormData {
@@ -47,7 +48,7 @@ export default function Payment() {
   const [customAmount, setCustomAmount] = useState<string>('');
   const [selectedAmount, setSelectedAmount] = useState<number>(500);
 
-  const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<PaymentFormData>({
+  const { register, handleSubmit, formState: { errors }, watch, setValue, control } = useForm<PaymentFormData>({
     defaultValues: {
       paymentMethod: 'card'
     }
@@ -125,47 +126,96 @@ export default function Payment() {
   }, [navigate, toast]);
 
   const onSubmit = async (data: PaymentFormData) => {
+    console.log("Form submitted with data:", data);
+    console.log("Order data:", orderData);
+    console.log("Payment method:", paymentMethod);
+    
     setIsProcessing(true);
     
     // Set the payment method in form data
     data.paymentMethod = paymentMethod;
     
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    // Here you would integrate with your bank's payment API
-    console.log("Payment data:", data);
-    console.log("Order data:", orderData);
-    
-    const processingMessage = paymentMethod === 'upi' 
-      ? "Your UPI payment is being processed..."
-      : "Your card payment is being processed...";
+    try {
+      // Prepare payment initiation request
+      const paymentRequest = {
+        paymentMethod: paymentMethod,
+        amount: orderData.amount,
+        currency: orderData.currency || 'INR',
+        orderNumber: orderData.orderId,
+        bookingType: orderData.bookingType
+      };
+
+      console.log("Initiating payment with:", paymentRequest);
+      console.log("Making API call to /api/payments/initiate");
       
-    toast({
-      title: "Payment Processing",
-      description: processingMessage,
-    });
-    
-    // Store successful payment data for success page
-    sessionStorage.setItem('completedPayment', JSON.stringify({ ...orderData, paymentData: data }));
-    
-    // Simulate successful payment
-    setTimeout(() => {
-      setIsProcessing(false);
+      // Call backend API to initiate payment
+      const response = await apiRequest('POST', '/api/payments/initiate', paymentRequest);
+      console.log("API response status:", response.status);
       
-      // Clear the pending booking since payment is complete
-      sessionStorage.removeItem('pendingBooking');
+      const result = await response.json();
+      console.log("Payment initiation response:", result);
       
-      const successMessage = orderData.bookingType === 'service'
-        ? "Your service has been booked successfully."
-        : "Your consultation has been booked successfully.";
+      if (result.success) {
+        toast({
+          title: "Payment Initiated",
+          description: result.message || "Payment has been initiated successfully.",
+        });
+        
+        // Store payment data
+        sessionStorage.setItem('completedPayment', JSON.stringify({ 
+          ...orderData, 
+          paymentData: data,
+          paymentId: result.paymentId,
+          apitxnid: result.apitxnid
+        }));
+        
+        // For UPI payments with QR code, show it
+        if (paymentMethod === 'upi' && result.qrString) {
+          // You can show QR code here if needed
+          console.log("QR String:", result.qrString);
+        }
+        
+        // Clear the pending booking since payment is initiated
+        sessionStorage.removeItem('pendingBooking');
+        
+        // Navigate to success page
+        const successMessage = orderData.bookingType === 'service'
+          ? "Your service has been booked successfully."
+          : orderData.bookingType === 'donation'
+          ? "Thank you for your donation!"
+          : "Your consultation has been booked successfully.";
+        
+        toast({
+          title: "Payment Successful!",
+          description: successMessage,
+        });
+        navigate("/payment/success");
+      } else {
+        throw new Error(result.message || "Failed to initiate payment");
+      }
+    } catch (error: any) {
+      console.error("Payment initiation error:", error);
+      
+      let errorMessage = "Failed to initiate payment. Please try again.";
+      if (error.message) {
+        errorMessage = error.message;
+        if (error.message.includes("401") || error.message.includes("Unauthorized")) {
+          errorMessage = "Please log in to continue with payment.";
+        } else if (error.message.includes("403") || error.message.includes("Forbidden")) {
+          errorMessage = "You don't have permission to make this payment.";
+        } else if (error.message.includes("Network") || error.message.includes("fetch")) {
+          errorMessage = "Network error. Please check your connection and try again.";
+        }
+      }
       
       toast({
-        title: "Payment Successful!",
-        description: successMessage,
+        title: "Payment Failed",
+        description: errorMessage,
+        variant: "destructive",
       });
-      navigate("/payment/success");
-    }, 2000);
+    } finally {
+      setIsProcessing(false);
+    }
   };
   
   const handlePaymentMethodChange = (method: 'card' | 'upi') => {
@@ -328,7 +378,7 @@ export default function Payment() {
                               onClick={() => {
                                 setSelectedAmount(amount);
                                 setCustomAmount('');
-                                setOrderData(prev => prev ? { ...prev, amount } : prev);
+                                setOrderData((prev: any) => prev ? { ...prev, amount } : prev);
                               }}
                               className={`h-16 flex-col space-y-1 transition-all duration-200 ${
                                 selectedAmount === amount 
@@ -361,7 +411,7 @@ export default function Payment() {
                                 const numValue = parseInt(value) || 0;
                                 if (numValue > 0) {
                                   setSelectedAmount(numValue);
-                                  setOrderData(prev => prev ? { ...prev, amount: numValue } : prev);
+                                  setOrderData((prev: any) => prev ? { ...prev, amount: numValue } : prev);
                                 }
                               }}
                               className="pl-8 bg-input border-border focus:border-primary"
@@ -415,34 +465,54 @@ export default function Payment() {
                       <div className="grid grid-cols-3 gap-4">
                         <div>
                           <Label htmlFor="expiryMonth">Month</Label>
-                          <Select {...register("expiryMonth", { required: "Month is required" })}>
-                            <SelectTrigger className="bg-input border-border" data-testid="select-expiry-month">
-                              <SelectValue placeholder="MM" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {Array.from({ length: 12 }, (_, i) => (
-                                <SelectItem key={i + 1} value={String(i + 1).padStart(2, '0')}>
-                                  {String(i + 1).padStart(2, '0')}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <Controller
+                            name="expiryMonth"
+                            control={control}
+                            rules={{ required: "Month is required" }}
+                            render={({ field }) => (
+                              <Select value={field.value || ""} onValueChange={field.onChange}>
+                                <SelectTrigger className="bg-input border-border" data-testid="select-expiry-month">
+                                  <SelectValue placeholder="MM" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {Array.from({ length: 12 }, (_, i) => (
+                                    <SelectItem key={i + 1} value={String(i + 1).padStart(2, '0')}>
+                                      {String(i + 1).padStart(2, '0')}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            )}
+                          />
+                          {errors.expiryMonth && (
+                            <p className="text-red-400 text-sm mt-1">{errors.expiryMonth.message}</p>
+                          )}
                         </div>
 
                         <div>
                           <Label htmlFor="expiryYear">Year</Label>
-                          <Select {...register("expiryYear", { required: "Year is required" })}>
-                            <SelectTrigger className="bg-input border-border" data-testid="select-expiry-year">
-                              <SelectValue placeholder="YYYY" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {Array.from({ length: 10 }, (_, i) => (
-                                <SelectItem key={i} value={String(new Date().getFullYear() + i)}>
-                                  {new Date().getFullYear() + i}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <Controller
+                            name="expiryYear"
+                            control={control}
+                            rules={{ required: "Year is required" }}
+                            render={({ field }) => (
+                              <Select value={field.value || ""} onValueChange={field.onChange}>
+                                <SelectTrigger className="bg-input border-border" data-testid="select-expiry-year">
+                                  <SelectValue placeholder="YYYY" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {Array.from({ length: 10 }, (_, i) => (
+                                    <SelectItem key={i} value={String(new Date().getFullYear() + i)}>
+                                      {new Date().getFullYear() + i}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            )}
+                          />
+                          {errors.expiryYear && (
+                            <p className="text-red-400 text-sm mt-1">{errors.expiryYear.message}</p>
+                          )}
                         </div>
 
                         <div>

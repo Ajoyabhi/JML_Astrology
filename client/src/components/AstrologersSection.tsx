@@ -83,7 +83,7 @@ export default function AstrologersSection() {
                   <SelectItem value="all">All Languages</SelectItem>
                   <SelectItem value="English">English</SelectItem>
                   <SelectItem value="Hindi">Hindi</SelectItem>
-                  <SelectItem value="Bengali">Bengali</SelectItem>
+                  <SelectItem value="Bengali">Bengali</SelectItem>  
                 </SelectContent>
               </Select>
             </div>

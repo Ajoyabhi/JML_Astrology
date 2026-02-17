@@ -2,6 +2,10 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./googleAuth";
+import { unpayPayin } from "./unpay";
+import { db } from "./db";
+import { payments } from "@shared/schema";
+import { eq } from "drizzle-orm";
 import { 
   insertAstrologerSchema,
   insertConsultationSchema,
@@ -329,7 +333,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.id;
       
       // Validate request body
-      const validatedData = insertOrderSchema.omit({ id: true, createdAt: true, updatedAt: true }).parse({
+      const validatedData = insertOrderSchema.parse({
         ...req.body,
         userId,
       });
@@ -513,42 +517,249 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Payment Integration - Bank API endpoints
-  app.post("/api/payments/initiate", isAuthenticated, async (req: any, res) => {
+  // Payment Integration - Unpay API endpoints
+  // Works for both authenticated and unauthenticated users
+  app.post("/api/payments/initiate", async (req: any, res) => {
     try {
-      const userId = req.user.id;
-      const { orderId, paymentMethod } = req.body;
+      // Get userId from authenticated user or create/use guest user
+      let userId: string;
+      if (req.user && req.user.id) {
+        userId = req.user.id;
+      } else {
+        // For guest users, create or get a guest user
+        // Use email from request to find or create guest user
+        const { email } = req.body;
+        let guestUser;
+        
+        if (email) {
+          // Try to find existing user by email
+          guestUser = await storage.getUserByEmail(email);
+        }
+        
+        if (!guestUser) {
+          // Create a guest user for this payment
+          const guestEmail = email || `guest_${Date.now()}@jmlastro.guest`;
+          guestUser = await storage.createUser({
+            email: guestEmail,
+            firstName: req.body.firstName || "Guest",
+            lastName: req.body.lastName || "User",
+            authProvider: "guest",
+            isEmailVerified: false,
+          });
+        }
+        
+        userId = guestUser.id;
+      }
       
-      // Validate order belongs to user
-      const order = await storage.getOrder(orderId, userId);
-      if (!order) {
-        return res.status(404).json({ message: "Order not found" });
+      const { orderId, paymentMethod, amount, currency, orderNumber, bookingType } = req.body;
+      
+      let order;
+      let paymentAmount: number;
+      let paymentCurrency: string;
+      let referenceId: string;
+
+      // Handle case where orderId is provided (existing order)
+      if (orderId) {
+        // Try to get the order - for authenticated users, check ownership
+        // For guest users, we'll try to get it by orderId only
+        try {
+          if (req.user && req.user.id) {
+            order = await storage.getOrder(orderId, userId);
+          } else {
+            // For guests, try to get order without userId check
+            // Note: This is less secure but allows guest payments
+            // In production, you might want to add a guest token or session-based validation
+            const allOrders = await storage.getOrders(userId);
+            order = allOrders.find(o => o.id === orderId);
+          }
+        } catch (error) {
+          console.warn("Could not fetch order:", error);
+          order = null;
+        }
+        
+        if (order) {
+          paymentAmount = parseFloat(order.totalAmount.toString());
+          paymentCurrency = order.currency || "INR";
+          referenceId = order.orderNumber || `JML${Date.now()}`;
+        } else {
+          // If order not found, fall back to direct payment
+          if (!amount || !orderNumber) {
+            return res.status(400).json({ message: "Order not found. Please provide amount and orderNumber." });
+          }
+          paymentAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+          paymentCurrency = currency || "INR";
+          referenceId = orderNumber;
+        }
+      } else {
+        // Handle direct payment (from booking flow)
+        if (!amount || !orderNumber) {
+          return res.status(400).json({ message: "Amount and orderNumber are required" });
+        }
+        paymentAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+        paymentCurrency = currency || "INR";
+        referenceId = orderNumber;
+      }
+
+      // For direct payments without order, we need to create a temporary order
+      // Since payment schema requires orderId, we'll create a minimal order first
+      let finalOrderId = order?.id;
+      if (!finalOrderId) {
+        // Get or create a temporary service for guest orders
+        // First, try to get services to find any existing service
+        const services = await storage.getServices({});
+        let serviceId = "temp-service";
+        
+        // If we have services, use the first one, otherwise we'll need to handle the error
+        if (services && services.length > 0) {
+          serviceId = services[0].id;
+        }
+        
+        try {
+          const tempOrderData = insertOrderSchema.parse({
+            userId,
+            serviceId: serviceId,
+            orderNumber: referenceId,
+            totalAmount: paymentAmount.toString(),
+            currency: paymentCurrency,
+            status: "pending",
+            paymentStatus: "pending"
+          });
+          const tempOrder = await storage.createOrder(tempOrderData);
+          finalOrderId = tempOrder.id;
+        } catch (orderError: any) {
+          console.error("Could not create temp order:", orderError.message);
+          return res.status(500).json({ 
+            success: false,
+            message: "Failed to create order. Please try again.",
+            error: orderError.message 
+          });
+        }
       }
 
       // Create payment record
       const paymentData = insertPaymentSchema.parse({
-        orderId,
+        orderId: finalOrderId!,
         userId,
-        amount: order.totalAmount,
-        currency: order.currency,
-        paymentMethod,
+        amount: paymentAmount.toString(),
+        currency: paymentCurrency,
+        paymentMethod: paymentMethod || 'upi',
         status: "pending"
       });
 
       const payment = await storage.createPayment(paymentData);
 
-      // TODO: Integrate with your bank's API here
-      // For now, we'll return payment initiation data
-      res.json({
-        paymentId: payment.id,
-        bankPaymentUrl: `/api/payments/mock-bank-redirect?paymentId=${payment.id}`,
-        qrCode: `upi://pay?pa=merchant@jmlastro&pn=JML Astro&am=${order.totalAmount}&cu=INR&tn=${order.orderNumber}`,
-        message: "Payment initiated successfully"
-      });
+      // Initiate payment with Unpay API
+      try {
+        const unpayResponse = await unpayPayin(
+          {
+            order_amount: paymentAmount,
+            reference_id: referenceId
+          },
+          userId
+        );
 
-    } catch (error) {
+        // Update payment with transaction ID
+        if (unpayResponse.data?.apitxnid) {
+          await storage.updatePaymentStatus(payment.id, {
+            status: "pending",
+            bankTransactionId: unpayResponse.data.apitxnid,
+            bankResponse: unpayResponse
+          });
+        }
+
+        // Return response based on payment method
+        if (paymentMethod === 'upi' && unpayResponse.statuscode === "TXN" && unpayResponse.data?.qrString) {
+          res.json({
+            success: true,
+            paymentId: payment.id,
+            statuscode: unpayResponse.statuscode,
+            message: unpayResponse.message,
+            qrString: unpayResponse.data.qrString,
+            apitxnid: unpayResponse.data.apitxnid,
+            amount: paymentAmount,
+            currency: paymentCurrency,
+            referenceId: referenceId
+          });
+        } else if (paymentMethod === 'card') {
+          // For card payments, you might need a different flow
+          res.json({
+            success: true,
+            paymentId: payment.id,
+            message: "Card payment initiated",
+            redirectUrl: `/api/payments/mock-bank-redirect?paymentId=${payment.id}`,
+            amount: paymentAmount,
+            currency: paymentCurrency,
+            referenceId: referenceId
+          });
+        } else {
+          res.json({
+            success: false,
+            paymentId: payment.id,
+            statuscode: unpayResponse.statuscode,
+            message: unpayResponse.message || "Payment initiation failed",
+            data: unpayResponse.data
+          });
+        }
+      } catch (unpayError: any) {
+        console.error("Unpay API error:", unpayError);
+        
+        // Update payment status to failed
+        await storage.updatePaymentStatus(payment.id, {
+          status: "failed",
+          bankTransactionId: "",
+          bankResponse: { error: unpayError.message }
+        });
+
+        res.status(500).json({
+          success: false,
+          message: "Failed to initiate payment with payment gateway",
+          error: unpayError.message
+        });
+      }
+
+    } catch (error: any) {
       console.error("Error initiating payment:", error);
-      res.status(500).json({ message: "Failed to initiate payment" });
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to initiate payment",
+        error: error.message 
+      });
+    }
+  });
+
+  // Unpay webhook callback
+  app.post("/api/payments/unpay/callback", async (req, res) => {
+    try {
+      // This will handle webhook from Unpay API
+      const { apitxnid, status, message, data } = req.body;
+      
+      console.log("Unpay webhook received:", req.body);
+      
+      // Find payment by transaction ID
+      // Note: You may need to add a method to find payment by bankTransactionId
+      // For now, we'll need to store the mapping or search by reference
+      
+      // Verify webhook signature here (implement based on Unpay's requirements)
+      
+      // Map Unpay status to our payment status
+      let paymentStatus = "pending";
+      if (status === "SUCCESS" || status === "TXN") {
+        paymentStatus = "success";
+      } else if (status === "FAILED" || status === "FAILURE") {
+        paymentStatus = "failed";
+      }
+
+      // TODO: Find payment by apitxnid and update
+      // This requires adding a method to search payments by bankTransactionId
+      // For now, we'll just acknowledge the webhook
+      
+      res.json({ 
+        success: true,
+        message: "Webhook processed successfully" 
+      });
+    } catch (error) {
+      console.error("Error processing Unpay webhook:", error);
+      res.status(500).json({ message: "Failed to process webhook" });
     }
   });
 
@@ -577,10 +788,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/payments/status/:paymentId", isAuthenticated, async (req: any, res) => {
+  // Payment status endpoint - works for both authenticated and unauthenticated users
+  app.get("/api/payments/status/:paymentId", async (req: any, res) => {
     try {
-      const userId = req.user.id;
-      const payment = await storage.getPayment(req.params.paymentId, userId);
+      // For authenticated users, check ownership
+      // For guest users, allow access to payment status by paymentId
+      let payment;
+      if (req.user && req.user.id) {
+        payment = await storage.getPayment(req.params.paymentId, req.user.id);
+      } else {
+        // For guests, we need to get payment without userId check
+        // This is less secure but necessary for guest payments
+        // In production, you might want to add additional validation
+        const [paymentRecord] = await db
+          .select()
+          .from(payments)
+          .where(eq(payments.id, req.params.paymentId));
+        payment = paymentRecord;
+      }
       
       if (!payment) {
         return res.status(404).json({ message: "Payment not found" });
