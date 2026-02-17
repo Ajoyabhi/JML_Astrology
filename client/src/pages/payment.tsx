@@ -199,7 +199,27 @@ export default function Payment() {
       console.log("QR generation response:", result);
       
       if (result.success && result.qrString) {
-        setQrString(result.qrString);
+        // Properly URL encode the UPI link by encoding query parameter values
+        let encodedQrString = result.qrString;
+        try {
+          // Split the URL into base and query string
+          const [base, queryString] = result.qrString.split('?');
+          if (queryString) {
+            // Parse and encode each query parameter
+            const params = queryString.split('&').map((param: string) => {
+              const [key, ...valueParts] = param.split('=');
+              const value = valueParts.join('='); // Handle values that might contain '='
+              return `${key}=${encodeURIComponent(value)}`;
+            });
+            encodedQrString = `${base}?${params.join('&')}`;
+          }
+        } catch (e) {
+          // Fallback: use encodeURI if parsing fails
+          console.warn("Failed to encode UPI URL:", e);
+          encodedQrString = result.qrString.replace(/ /g, '%20');
+        }
+        
+        setQrString(encodedQrString);
         setPaymentId(result.paymentId);
         setShowQR(true);
         setIsWaitingForPayment(true);
@@ -228,15 +248,33 @@ export default function Payment() {
 
   // Poll payment status
   const startPaymentPolling = (paymentId: string) => {
-    const maxAttempts = 120; // Poll for 10 minutes (120 * 5 seconds)
+    const maxAttempts = 60; // Poll for 5 minutes (60 * 5 seconds = 5 minutes)
+    const pollInterval = 5000; // 5 seconds
     let attempts = 0;
+    let pollTimeoutId: NodeJS.Timeout | null = null;
+    
+    // Set overall timeout (5 minutes)
+    const overallTimeout = setTimeout(() => {
+      setIsWaitingForPayment(false);
+      setPaymentStatus('pending');
+      toast({
+        title: "Payment Timeout",
+        description: "Payment verification timed out after 5 minutes. If you've completed the payment, it will be processed shortly.",
+        variant: "destructive",
+      });
+      if (pollTimeoutId) {
+        clearTimeout(pollTimeoutId);
+      }
+    }, maxAttempts * pollInterval);
     
     const poll = async () => {
       if (attempts >= maxAttempts) {
+        clearTimeout(overallTimeout);
         setIsWaitingForPayment(false);
+        setPaymentStatus('pending');
         toast({
           title: "Payment Timeout",
-          description: "Payment verification timed out. Please check your payment status.",
+          description: "Payment verification timed out. If you've completed the payment, it will be processed shortly.",
           variant: "destructive",
         });
         return;
@@ -251,7 +289,11 @@ export default function Payment() {
           const status = await response.json();
           
           if (status.status === 'success') {
-            // Payment successful
+            // Payment successful - stop polling
+            clearTimeout(overallTimeout);
+            if (pollTimeoutId) {
+              clearTimeout(pollTimeoutId);
+            }
             setPaymentStatus('success');
             setIsWaitingForPayment(false);
             sessionStorage.removeItem('pendingBooking');
@@ -273,7 +315,11 @@ export default function Payment() {
             }, 2000);
             return;
           } else if (status.status === 'failed') {
-            // Payment failed
+            // Payment failed - stop polling
+            clearTimeout(overallTimeout);
+            if (pollTimeoutId) {
+              clearTimeout(pollTimeoutId);
+            }
             setPaymentStatus('failed');
             setIsWaitingForPayment(false);
             toast({
@@ -287,16 +333,16 @@ export default function Payment() {
         
         // Continue polling
         attempts++;
-        setTimeout(poll, 5000); // Poll every 5 seconds
+        pollTimeoutId = setTimeout(poll, pollInterval);
       } catch (error) {
         console.error("Error polling payment status:", error);
         attempts++;
-        setTimeout(poll, 5000);
+        pollTimeoutId = setTimeout(poll, pollInterval);
       }
     };
     
     // Start polling after 5 seconds
-    setTimeout(poll, 5000);
+    pollTimeoutId = setTimeout(poll, pollInterval);
   };
 
   const onSubmit = async (data: PaymentFormData) => {
@@ -871,24 +917,24 @@ export default function Payment() {
                                     </div>
                                   )}
                                   
-                                  <div className="bg-white p-4 rounded-lg border">
-                                    <p className="text-sm font-medium mb-2 text-foreground">Scan QR Code to Pay</p>
-                                    {/* QR Code Display */}
-                                    <div className="w-48 h-48 mx-auto bg-gray-100 rounded-lg flex items-center justify-center mb-2 border-2 border-dashed border-gray-300">
-                                      {qrString ? (
-                                        <img 
-                                          src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrString)}`}
-                                          alt="UPI QR Code"
-                                          className="w-full h-full object-contain"
-                                        />
-                                      ) : (
-                                        <QrCode className="h-24 w-24 text-gray-400" />
-                                      )}
-                                    </div>
-                                    <p className="text-xs text-gray-600 mb-2">Scan with any UPI app</p>
-                                    <div className="text-xs bg-gray-50 p-2 rounded break-all mb-2">
-                                      {qrString || generateUPIString()}
-                                    </div>
+                                    <div className="bg-white p-4 rounded-lg border">
+                                      <p className="text-sm font-medium mb-2 text-foreground">Scan QR Code to Pay</p>
+                                      {/* QR Code Display */}
+                                      <div className="w-48 h-48 mx-auto bg-gray-100 rounded-lg flex items-center justify-center mb-2 border-2 border-dashed border-gray-300">
+                                        {qrString ? (
+                                          <img 
+                                            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrString)}`}
+                                            alt="UPI QR Code"
+                                            className="w-full h-full object-contain"
+                                          />
+                                        ) : (
+                                          <QrCode className="h-24 w-24 text-gray-400" />
+                                        )}
+                                      </div>
+                                      <p className="text-xs text-gray-600 mb-2">Scan with any UPI app</p>
+                                      <div className="text-xs bg-gray-50 p-2 rounded break-all mb-2 font-mono">
+                                        {qrString || generateUPIString()}
+                                      </div>
                                     <Button
                                       type="button"
                                       size="sm"
