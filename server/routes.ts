@@ -615,10 +615,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         
         try {
+          // Generate a unique order number for this temporary order to avoid
+          // collisions with the unique constraint on orders.order_number.
+          const uniqueOrderNumber = `${referenceId}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
           const tempOrderData = insertOrderSchema.parse({
             userId,
             serviceId: serviceId,
-            orderNumber: referenceId,
+            orderNumber: uniqueOrderNumber,
             totalAmount: paymentAmount.toString(),
             currency: paymentCurrency,
             status: "pending",
