@@ -44,9 +44,15 @@ export default function Payment() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderData, setOrderData] = useState<any>(null);
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'upi'>('card');
+  const [upiPaymentType, setUpiPaymentType] = useState<'qr' | 'upiid' | null>(null); // Track which UPI method user selected
   const [showQR, setShowQR] = useState(false);
   const [customAmount, setCustomAmount] = useState<string>('');
   const [selectedAmount, setSelectedAmount] = useState<number>(500);
+  const [qrString, setQrString] = useState<string>('');
+  const [paymentId, setPaymentId] = useState<string>('');
+  const [isGeneratingQR, setIsGeneratingQR] = useState(false);
+  const [isWaitingForPayment, setIsWaitingForPayment] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success' | 'failed'>('pending');
 
   const { register, handleSubmit, formState: { errors }, watch, setValue, control } = useForm<PaymentFormData>({
     defaultValues: {
@@ -125,18 +131,223 @@ export default function Payment() {
     }
   }, [navigate, toast]);
 
+  // Generate QR code when user clicks "Show QR Code" button
+  const handleGenerateQR = async () => {
+    if (!orderData) return;
+    
+    setIsGeneratingQR(true);
+    
+    try {
+      // Get form data to send email/name for guest user creation
+      const formData = watch();
+      
+      const qrRequest = {
+        amount: orderData.amount,
+        currency: orderData.currency || 'INR',
+        orderNumber: orderData.orderId,
+        bookingType: orderData.bookingType,
+        email: formData.email || '',
+        firstName: formData.billingAddress?.split(' ')[0] || 'Guest',
+        lastName: formData.billingAddress?.split(' ').slice(1).join(' ') || 'User'
+      };
+
+      console.log("Generating QR code with:", qrRequest);
+      
+      // Use fetch directly to have better error handling
+      const response = await fetch('/api/payments/generate-qr', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(qrRequest)
+      });
+
+      console.log("Response: in payment.tsx", response);
+      
+      // Check if response is OK
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error response:", errorText.substring(0, 500));
+        
+        // Try to parse as JSON if possible
+        let errorMessage = `Server error: ${response.status}`;
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.message || errorJson.error || errorMessage;
+        } catch {
+          // If not JSON, use the text or status
+          if (errorText.includes('<!DOCTYPE')) {
+            errorMessage = `Server returned an error page. Please check if the endpoint exists.`;
+          } else {
+            errorMessage = errorText.substring(0, 200);
+          }
+        }
+        
+        throw new Error(errorMessage);
+      }
+      
+      // Check content type before parsing
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error("Non-JSON response received:", text.substring(0, 200));
+        throw new Error("Server returned an invalid response format. Please try again.");
+      }
+      
+      const result = await response.json();
+      console.log("QR generation response:", result);
+      
+      if (result.success && result.qrString) {
+        setQrString(result.qrString);
+        setPaymentId(result.paymentId);
+        setShowQR(true);
+        setIsWaitingForPayment(true);
+        
+        toast({
+          title: "QR Code Generated",
+          description: "Please scan the QR code to complete payment.",
+        });
+        
+        // Start polling for payment status
+        startPaymentPolling(result.paymentId);
+      } else {
+        throw new Error(result.message || "Failed to generate QR code");
+      }
+    } catch (error: any) {
+      console.error("QR generation error:", error);
+      toast({
+        title: "Failed to Generate QR Code",
+        description: error.message || "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingQR(false);
+    }
+  };
+
+  // Poll payment status
+  const startPaymentPolling = (paymentId: string) => {
+    const maxAttempts = 120; // Poll for 10 minutes (120 * 5 seconds)
+    let attempts = 0;
+    
+    const poll = async () => {
+      if (attempts >= maxAttempts) {
+        setIsWaitingForPayment(false);
+        toast({
+          title: "Payment Timeout",
+          description: "Payment verification timed out. Please check your payment status.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/payments/status/${paymentId}`, {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          const status = await response.json();
+          
+          if (status.status === 'success') {
+            // Payment successful
+            setPaymentStatus('success');
+            setIsWaitingForPayment(false);
+            sessionStorage.removeItem('pendingBooking');
+            
+            const successMessage = orderData.bookingType === 'service'
+              ? "Your service has been booked successfully."
+              : orderData.bookingType === 'donation'
+              ? "Thank you for your donation!"
+              : "Your consultation has been booked successfully.";
+            
+            toast({
+              title: "Payment Successful!",
+              description: successMessage,
+            });
+            
+            // Navigate to success page after a short delay
+            setTimeout(() => {
+              navigate("/payment/success");
+            }, 2000);
+            return;
+          } else if (status.status === 'failed') {
+            // Payment failed
+            setPaymentStatus('failed');
+            setIsWaitingForPayment(false);
+            toast({
+              title: "Payment Failed",
+              description: "Your payment could not be processed. Please try again.",
+              variant: "destructive",
+            });
+            return;
+          }
+        }
+        
+        // Continue polling
+        attempts++;
+        setTimeout(poll, 5000); // Poll every 5 seconds
+      } catch (error) {
+        console.error("Error polling payment status:", error);
+        attempts++;
+        setTimeout(poll, 5000);
+      }
+    };
+    
+    // Start polling after 5 seconds
+    setTimeout(poll, 5000);
+  };
+
   const onSubmit = async (data: PaymentFormData) => {
+    // For UPI payments, validate that user has selected a payment type
+    if (paymentMethod === 'upi') {
+      if (!upiPaymentType) {
+        toast({
+          title: "Select Payment Method",
+          description: "Please select either 'Scan QR Code' or 'Enter UPI ID' to proceed.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // If QR code method is selected but QR not generated yet
+      if (upiPaymentType === 'qr' && !qrString) {
+        toast({
+          title: "Generate QR Code",
+          description: "Please click 'Generate QR Code' button first.",
+          variant: "default",
+        });
+        return;
+      }
+      
+      // If UPI ID method is selected, validate UPI ID
+      if (upiPaymentType === 'upiid') {
+        if (!data.upiId || errors.upiId) {
+          toast({
+            title: "Enter UPI ID",
+            description: "Please enter a valid UPI ID to proceed.",
+            variant: "destructive",
+          });
+          return;
+        }
+        // For UPI ID, we'll generate QR code with the UPI ID or use a different flow
+        // For now, we'll use the same QR generation but this could be enhanced
+        toast({
+          title: "UPI ID Payment",
+          description: "UPI ID payment will be processed. Please generate QR code or use the payment link.",
+          variant: "default",
+        });
+        return;
+      }
+    }
+    
+    // For card payments, proceed with normal flow
     console.log("Form submitted with data:", data);
-    console.log("Order data:", orderData);
-    console.log("Payment method:", paymentMethod);
-    
     setIsProcessing(true);
-    
-    // Set the payment method in form data
     data.paymentMethod = paymentMethod;
     
     try {
-      // Prepare payment initiation request
       const paymentRequest = {
         paymentMethod: paymentMethod,
         amount: orderData.amount,
@@ -145,15 +356,8 @@ export default function Payment() {
         bookingType: orderData.bookingType
       };
 
-      console.log("Initiating payment with:", paymentRequest);
-      console.log("Making API call to /api/payments/initiate");
-      
-      // Call backend API to initiate payment
       const response = await apiRequest('POST', '/api/payments/initiate', paymentRequest);
-      console.log("API response status:", response.status);
-      
       const result = await response.json();
-      console.log("Payment initiation response:", result);
       
       if (result.success) {
         toast({
@@ -161,7 +365,6 @@ export default function Payment() {
           description: result.message || "Payment has been initiated successfully.",
         });
         
-        // Store payment data
         sessionStorage.setItem('completedPayment', JSON.stringify({ 
           ...orderData, 
           paymentData: data,
@@ -169,16 +372,8 @@ export default function Payment() {
           apitxnid: result.apitxnid
         }));
         
-        // For UPI payments with QR code, show it
-        if (paymentMethod === 'upi' && result.qrString) {
-          // You can show QR code here if needed
-          console.log("QR String:", result.qrString);
-        }
-        
-        // Clear the pending booking since payment is initiated
         sessionStorage.removeItem('pendingBooking');
         
-        // Navigate to success page
         const successMessage = orderData.bookingType === 'service'
           ? "Your service has been booked successfully."
           : orderData.bookingType === 'donation'
@@ -199,13 +394,6 @@ export default function Payment() {
       let errorMessage = "Failed to initiate payment. Please try again.";
       if (error.message) {
         errorMessage = error.message;
-        if (error.message.includes("401") || error.message.includes("Unauthorized")) {
-          errorMessage = "Please log in to continue with payment.";
-        } else if (error.message.includes("403") || error.message.includes("Forbidden")) {
-          errorMessage = "You don't have permission to make this payment.";
-        } else if (error.message.includes("Network") || error.message.includes("fetch")) {
-          errorMessage = "Network error. Please check your connection and try again.";
-        }
       }
       
       toast({
@@ -222,9 +410,27 @@ export default function Payment() {
     setPaymentMethod(method);
     setValue('paymentMethod', method);
     setShowQR(false);
+    setUpiPaymentType(null); // Reset UPI payment type when switching payment methods
+    setQrString('');
+    setIsWaitingForPayment(false);
+    setPaymentStatus('pending');
+  };
+
+  const handleUpiPaymentTypeChange = (type: 'qr' | 'upiid') => {
+    setUpiPaymentType(type);
+    setShowQR(false);
+    setQrString('');
+    setIsWaitingForPayment(false);
+    setPaymentStatus('pending');
+    
+    // Clear UPI ID validation when switching to QR
+    if (type === 'qr') {
+      setValue('upiId', '');
+    }
   };
   
   const generateUPIString = () => {
+    if (qrString) return qrString;
     if (!orderData) return '';
     return `upi://pay?pa=merchant@jmlastro&pn=JML Astro&am=${orderData.amount}&cu=INR&tn=${orderData.orderId}`;
   };
@@ -559,73 +765,208 @@ export default function Payment() {
                       <div className="space-y-4">
                         <h3 className="font-semibold text-foreground mb-4">UPI Payment</h3>
                         
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {/* UPI ID Payment */}
-                            <div className="p-4 border border-border rounded-lg">
-                              <div className="flex items-center gap-2 mb-3">
-                                <Phone className="h-4 w-4 text-accent" />
-                                <h4 className="font-semibold">Pay with UPI ID</h4>
-                              </div>
+                        {/* UPI Payment Type Selection */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                          {/* QR Code Option */}
+                          <div 
+                            onClick={() => handleUpiPaymentTypeChange('qr')}
+                            className={`cursor-pointer p-4 border-2 rounded-lg transition-all duration-200 ${
+                              upiPaymentType === 'qr' 
+                                ? 'border-accent bg-accent/5 shadow-md' 
+                                : 'border-border hover:border-accent/50'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <QrCode className={`h-6 w-6 ${
+                                upiPaymentType === 'qr' ? 'text-accent' : 'text-muted-foreground'
+                              }`} />
                               <div>
-                                <Label htmlFor="upiId">UPI ID</Label>
+                                <h4 className={`font-semibold ${
+                                  upiPaymentType === 'qr' ? 'text-accent' : 'text-foreground'
+                                }`}>Scan QR Code</h4>
+                                <p className="text-sm text-muted-foreground">Generate QR and scan to pay</p>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* UPI ID Option */}
+                          <div 
+                            onClick={() => handleUpiPaymentTypeChange('upiid')}
+                            className={`cursor-pointer p-4 border-2 rounded-lg transition-all duration-200 ${
+                              upiPaymentType === 'upiid' 
+                                ? 'border-accent bg-accent/5 shadow-md' 
+                                : 'border-border hover:border-accent/50'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <Phone className={`h-6 w-6 ${
+                                upiPaymentType === 'upiid' ? 'text-accent' : 'text-muted-foreground'
+                              }`} />
+                              <div>
+                                <h4 className={`font-semibold ${
+                                  upiPaymentType === 'upiid' ? 'text-accent' : 'text-foreground'
+                                }`}>Enter UPI ID</h4>
+                                <p className="text-sm text-muted-foreground">Pay directly with your UPI ID</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* QR Code Payment Section */}
+                        {upiPaymentType === 'qr' && (
+                          <div className="p-4 border border-border rounded-lg bg-card">
+                            <div className="flex items-center gap-2 mb-4">
+                              <QrCode className="h-5 w-5 text-accent" />
+                              <h4 className="font-semibold">Pay with QR Code</h4>
+                            </div>
+                            <div className="text-center">
+                              {!showQR ? (
+                                <Button
+                                  type="button"
+                                  onClick={handleGenerateQR}
+                                  disabled={isGeneratingQR}
+                                  className="bg-accent hover:bg-accent/80 text-white w-full mb-4"
+                                >
+                                  {isGeneratingQR ? (
+                                    <>
+                                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                                      Generating QR Code...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <QrCode className="w-4 h-4 mr-2" />
+                                      Generate QR Code
+                                    </>
+                                  )}
+                                </Button>
+                              ) : (
+                                <>
+                                  {isWaitingForPayment && (
+                                    <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                                      <div className="flex items-center gap-2 mb-2">
+                                        <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                                        <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                                          Waiting for payment confirmation...
+                                        </p>
+                                      </div>
+                                      <p className="text-xs text-blue-700 dark:text-blue-300">
+                                        Please complete the payment using the QR code below
+                                      </p>
+                                    </div>
+                                  )}
+                                  
+                                  {paymentStatus === 'success' && (
+                                    <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                                      <p className="text-sm font-medium text-green-900 dark:text-green-100">
+                                        ✓ Payment Successful! Redirecting...
+                                      </p>
+                                    </div>
+                                  )}
+                                  
+                                  {paymentStatus === 'failed' && (
+                                    <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                                      <p className="text-sm font-medium text-red-900 dark:text-red-100">
+                                        ✗ Payment Failed. Please try again.
+                                      </p>
+                                    </div>
+                                  )}
+                                  
+                                  <div className="bg-white p-4 rounded-lg border">
+                                    <p className="text-sm font-medium mb-2 text-foreground">Scan QR Code to Pay</p>
+                                    {/* QR Code Display */}
+                                    <div className="w-48 h-48 mx-auto bg-gray-100 rounded-lg flex items-center justify-center mb-2 border-2 border-dashed border-gray-300">
+                                      {qrString ? (
+                                        <img 
+                                          src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrString)}`}
+                                          alt="UPI QR Code"
+                                          className="w-full h-full object-contain"
+                                        />
+                                      ) : (
+                                        <QrCode className="h-24 w-24 text-gray-400" />
+                                      )}
+                                    </div>
+                                    <p className="text-xs text-gray-600 mb-2">Scan with any UPI app</p>
+                                    <div className="text-xs bg-gray-50 p-2 rounded break-all mb-2">
+                                      {qrString || generateUPIString()}
+                                    </div>
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      onClick={copyUPIString}
+                                      className="w-full mb-2"
+                                    >
+                                      <Copy className="h-3 w-3 mr-1" />
+                                      Copy UPI String
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => {
+                                        setShowQR(false);
+                                        setQrString('');
+                                        setIsWaitingForPayment(false);
+                                        setPaymentStatus('pending');
+                                      }}
+                                      className="w-full"
+                                    >
+                                      Generate New QR Code
+                                    </Button>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* UPI ID Payment Section */}
+                        {upiPaymentType === 'upiid' && (
+                          <div className="p-4 border border-border rounded-lg bg-card">
+                            <div className="flex items-center gap-2 mb-4">
+                              <Phone className="h-5 w-5 text-accent" />
+                              <h4 className="font-semibold">Pay with UPI ID</h4>
+                            </div>
+                            <div className="space-y-4">
+                              <div>
+                                <Label htmlFor="upiId">Your UPI ID</Label>
                                 <Input
                                   id="upiId"
                                   type="text"
                                   placeholder="yourname@paytm"
                                   className="bg-input border-border"
                                   {...register("upiId", { 
-                                    required: paymentMethod === 'upi' && !showQR ? "UPI ID is required" : false,
+                                    required: upiPaymentType === 'upiid' ? "UPI ID is required" : false,
                                     pattern: {
                                       value: /^[a-zA-Z0-9.\-_]+@[a-zA-Z0-9.-]+$/,
-                                      message: "Please enter a valid UPI ID"
+                                      message: "Please enter a valid UPI ID (e.g., yourname@paytm)"
                                     }
                                   })}
                                 />
                                 {errors.upiId && (
                                   <p className="text-red-400 text-sm mt-1">{errors.upiId.message}</p>
                                 )}
+                                <p className="text-xs text-muted-foreground mt-2">
+                                  Enter your UPI ID to receive payment request
+                                </p>
                               </div>
-                            </div>
-                            
-                            {/* QR Code Payment */}
-                            <div className="p-4 border border-border rounded-lg">
-                              <div className="flex items-center gap-2 mb-3">
-                                <QrCode className="h-4 w-4 text-accent" />
-                                <h4 className="font-semibold">Pay with QR Code</h4>
-                              </div>
-                              <div className="text-center">
-                                <Button
-                                  type="button"
-                                  onClick={() => setShowQR(!showQR)}
-                                  className="bg-accent hover:bg-accent/80 text-white w-full mb-2"
-                                >
-                                  {showQR ? 'Hide QR Code' : 'Show QR Code'}
-                                </Button>
-                                {showQR && (
-                                  <div className="bg-white p-4 rounded-lg border">
-                                    <div className="w-32 h-32 mx-auto bg-gray-200 rounded-lg flex items-center justify-center mb-2">
-                                      <QrCode className="h-16 w-16 text-gray-400" />
-                                    </div>
-                                    <p className="text-xs text-gray-600 mb-2">Scan with any UPI app</p>
-                                    <div className="text-xs bg-gray-50 p-2 rounded break-all">
-                                      {generateUPIString()}
-                                    </div>
-                                    <Button
-                                      type="button"
-                                      size="sm"
-                                      onClick={copyUPIString}
-                                      className="mt-2 w-full"
-                                    >
-                                      <Copy className="h-3 w-3 mr-1" />
-                                      Copy UPI String
-                                    </Button>
-                                  </div>
-                                )}
+                              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                                <p className="text-xs text-blue-700 dark:text-blue-300">
+                                  <strong>Note:</strong> After submitting, you'll receive a payment request on your UPI app. 
+                                  Approve the payment to complete the transaction.
+                                </p>
                               </div>
                             </div>
                           </div>
-                        </div>
+                        )}
+
+                        {/* Prompt to select payment type */}
+                        {!upiPaymentType && (
+                          <div className="p-4 border-2 border-dashed border-border rounded-lg text-center">
+                            <p className="text-sm text-muted-foreground">
+                              Please select a payment method above
+                            </p>
+                          </div>
+                        )}
                       </div>
                     )}
 

@@ -673,9 +673,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         // Return response based on payment method
         if (paymentMethod === 'upi' && unpayResponse.statuscode === "TXN" && unpayResponse.data?.qrString) {
-          res.json({
+      res.json({
             success: true,
-            paymentId: payment.id,
+        paymentId: payment.id,
             statuscode: unpayResponse.statuscode,
             message: unpayResponse.message,
             qrString: unpayResponse.data.qrString,
@@ -731,6 +731,156 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generate QR Code endpoint - called when user clicks "Show QR Code"
+  app.post("/api/payments/generate-qr", async (req: any, res) => {
+    console.log("QR generation endpoint hit");
+    console.log("Request body:", req.body);
+    
+    try {
+      // Get userId from authenticated user or create/use guest user
+      let userId: string;
+      if (req.user && req.user.id) {
+        userId = req.user.id;
+        console.log("Using authenticated user:", userId);
+      } else {
+        // For guest users, create or get a guest user
+        const { email, firstName, lastName } = req.body;
+        let guestUser;
+        
+        if (email) {
+          guestUser = await storage.getUserByEmail(email);
+        }
+        
+        if (!guestUser) {
+          const guestEmail = email || `guest_${Date.now()}@jmlastro.guest`;
+          console.log("Creating guest user with email:", guestEmail);
+          guestUser = await storage.createUser({
+            email: guestEmail,
+            firstName: firstName || "Guest",
+            lastName: lastName || "User",
+            authProvider: "guest",
+            isEmailVerified: false,
+          });
+        }
+        
+        userId = guestUser.id;
+        console.log("Using guest user:", userId);
+      }
+      
+      const { amount, currency, orderNumber, bookingType } = req.body;
+      console.log("Payment details:", { amount, currency, orderNumber, bookingType });
+      
+      if (!amount || !orderNumber) {
+        return res.status(400).json({ 
+          success: false,
+          message: "Amount and orderNumber are required" 
+        });
+      }
+
+      const paymentAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+      const paymentCurrency = currency || "INR";
+      const referenceId = orderNumber;
+
+      // Get services to find a service ID for the order
+      const services = await storage.getServices({});
+      let serviceId = "temp-service";
+      
+      if (services && services.length > 0) {
+        serviceId = services[0].id;
+      }
+      
+      // Create a temporary order
+      const uniqueOrderNumber = `${referenceId}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      
+      const tempOrderData = insertOrderSchema.parse({
+        userId,
+        serviceId: serviceId,
+        orderNumber: uniqueOrderNumber,
+        totalAmount: paymentAmount.toString(),
+        currency: paymentCurrency,
+        status: "pending",
+        paymentStatus: "pending"
+      });
+      
+      const tempOrder = await storage.createOrder(tempOrderData);
+
+      // Create payment record
+      const paymentData = insertPaymentSchema.parse({
+        orderId: tempOrder.id,
+        userId,
+        amount: paymentAmount.toString(),
+        currency: paymentCurrency,
+        paymentMethod: 'upi',
+        status: "pending"
+      });
+
+      const payment = await storage.createPayment(paymentData);
+
+      // Generate QR code with Unpay API
+      try {
+        const unpayResponse = await unpayPayin(
+          {
+            order_amount: paymentAmount,
+            reference_id: referenceId
+          },
+          userId
+        );
+
+        console.log("Unpay QR generation response:", unpayResponse);
+
+        // Update payment with transaction ID
+        if (unpayResponse.data?.apitxnid) {
+          await storage.updatePaymentStatus(payment.id, {
+            status: "pending",
+            bankTransactionId: unpayResponse.data.apitxnid,
+            bankResponse: unpayResponse
+          });
+        }
+
+        if (unpayResponse.statuscode === "TXN" && unpayResponse.data?.qrString) {
+          res.json({
+            success: true,
+            paymentId: payment.id,
+            qrString: unpayResponse.data.qrString,
+            apitxnid: unpayResponse.data.apitxnid,
+            amount: paymentAmount,
+            currency: paymentCurrency,
+            referenceId: referenceId,
+            message: "QR code generated successfully"
+          });
+        } else {
+          res.status(400).json({
+            success: false,
+            paymentId: payment.id,
+            message: unpayResponse.message || "Failed to generate QR code",
+            statuscode: unpayResponse.statuscode
+          });
+        }
+      } catch (unpayError: any) {
+        console.error("Unpay API error:", unpayError);
+        
+        await storage.updatePaymentStatus(payment.id, {
+          status: "failed",
+          bankTransactionId: "",
+          bankResponse: { error: unpayError.message }
+        });
+
+        res.status(500).json({
+          success: false,
+          message: "Failed to generate QR code",
+          error: unpayError.message
+        });
+      }
+    } catch (error: any) {
+      console.error("Error generating QR code:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to generate QR code",
+        error: error.message 
+      });
+    }
+  });
+
   // Unpay webhook callback
   app.post("/api/payments/unpay/callback", async (req, res) => {
     try {
@@ -739,31 +889,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log("Unpay webhook received:", req.body);
       
-      // Find payment by transaction ID
-      // Note: You may need to add a method to find payment by bankTransactionId
-      // For now, we'll need to store the mapping or search by reference
+      // Find payment by transaction ID (apitxnid)
+      const [payment] = await db
+        .select()
+        .from(payments)
+        .where(eq(payments.bankTransactionId, apitxnid));
+      
+      if (!payment) {
+        console.warn("Payment not found for transaction ID:", apitxnid);
+        return res.status(404).json({ 
+          success: false,
+          message: "Payment not found" 
+        });
+      }
       
       // Verify webhook signature here (implement based on Unpay's requirements)
       
       // Map Unpay status to our payment status
       let paymentStatus = "pending";
-      if (status === "SUCCESS" || status === "TXN") {
+      if (status === "SUCCESS" || status === "TXN" || status === "success") {
         paymentStatus = "success";
-      } else if (status === "FAILED" || status === "FAILURE") {
+      } else if (status === "FAILED" || status === "FAILURE" || status === "failed") {
         paymentStatus = "failed";
       }
 
-      // TODO: Find payment by apitxnid and update
-      // This requires adding a method to search payments by bankTransactionId
-      // For now, we'll just acknowledge the webhook
+      // Update payment status
+      await storage.updatePaymentStatus(payment.id, {
+        status: paymentStatus,
+        bankTransactionId: apitxnid,
+        bankResponse: { ...req.body, processedAt: new Date() }
+      });
+
+      // If payment is successful, update the order status
+      if (paymentStatus === "success" && payment.orderId) {
+        await storage.updateOrderStatus(payment.orderId, "confirmed", "completed");
+      }
+      
+      console.log(`Payment ${payment.id} updated to status: ${paymentStatus}`);
       
       res.json({ 
         success: true,
-        message: "Webhook processed successfully" 
+        message: "Webhook processed successfully",
+        paymentId: payment.id,
+        status: paymentStatus
       });
     } catch (error) {
       console.error("Error processing Unpay webhook:", error);
-      res.status(500).json({ message: "Failed to process webhook" });
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to process webhook",
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
     }
   });
 
