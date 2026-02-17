@@ -661,7 +661,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           },
           userId
         );
-
+        console.log("Unpay response: in routes.ts", unpayResponse);
         // Update payment with transaction ID
         if (unpayResponse.data?.apitxnid) {
           await storage.updatePaymentStatus(payment.id, {
