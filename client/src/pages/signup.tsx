@@ -343,11 +343,15 @@ export default function Signup() {
                 </span>
               </Link>
             </div>
-            <div className="text-xs text-center text-muted-foreground">
+            <div className="flex justify-center">
               <Link href="/">
-                <span className="hover:text-primary cursor-pointer transition-colors">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-primary/40 text-primary hover:text-accent hover:border-accent px-4 py-2"
+                >
                   ← Back to Home
-                </span>
+                </Button>
               </Link>
             </div>
           </CardFooter>

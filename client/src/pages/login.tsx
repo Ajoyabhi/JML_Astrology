@@ -144,7 +144,7 @@ export default function Login() {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-muted/20 border-primary/30 focus:border-primary"
+                  className="bg-background text-foreground placeholder:text-muted-foreground border-primary/30 focus:border-primary"
                   data-testid="input-email"
                 />
               </div>
@@ -160,7 +160,7 @@ export default function Login() {
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="bg-muted/20 border-primary/30 focus:border-primary pr-10"
+                    className="bg-background text-foreground placeholder:text-muted-foreground border-primary/30 focus:border-primary pr-10"
                     data-testid="input-password"
                   />
                   <Button
@@ -226,11 +226,15 @@ export default function Login() {
                 </span>
               </Link>
             </div>
-            <div className="text-xs text-center text-muted-foreground">
+            <div className="flex justify-center">
               <Link href="/">
-                <span className="hover:text-primary cursor-pointer transition-colors">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-primary/40 text-primary hover:text-accent hover:border-accent px-4 py-2"
+                >
                   ← Back to Home
-                </span>
+                </Button>
               </Link>
             </div>
           </CardFooter>
