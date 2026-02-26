@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { useForm, Controller } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Lock, CreditCard, Shield, CheckCircle, ArrowLeft, IndianRupee, Smartphone, QrCode, Copy, Phone, Heart, DollarSign } from "lucide-react";
+import { Lock, CreditCard, Shield, CheckCircle, ArrowLeft, IndianRupee, Smartphone, QrCode, Copy, Phone, Heart } from "lucide-react";
 
 interface PaymentFormData {
   // Card payment fields
@@ -639,7 +639,7 @@ export default function Payment() {
                               }`}
                               data-testid={`button-amount-${amount}`}
                             >
-                              <DollarSign className="h-4 w-4" />
+                              <IndianRupee className="h-4 w-4" />
                               <span className="font-semibold">₹{amount}</span>
                             </Button>
                           ))}

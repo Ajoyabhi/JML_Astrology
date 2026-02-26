@@ -177,7 +177,7 @@ export default function Signup() {
                     placeholder="John"
                     value={formData.firstName}
                     onChange={(e) => handleInputChange("firstName", e.target.value)}
-                    className="bg-muted/20 border-primary/30 focus:border-primary"
+                    className="bg-background text-foreground placeholder:text-muted-foreground border-primary/30 focus:border-primary"
                     data-testid="input-first-name"
                   />
                 </div>
@@ -191,7 +191,7 @@ export default function Signup() {
                     placeholder="Doe"
                     value={formData.lastName}
                     onChange={(e) => handleInputChange("lastName", e.target.value)}
-                    className="bg-muted/20 border-primary/30 focus:border-primary"
+                    className="bg-background text-foreground placeholder:text-muted-foreground border-primary/30 focus:border-primary"
                     data-testid="input-last-name"
                   />
                 </div>
@@ -207,7 +207,7 @@ export default function Signup() {
                   placeholder="john@example.com"
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
-                  className="bg-muted/20 border-primary/30 focus:border-primary"
+                  className="bg-background text-foreground placeholder:text-muted-foreground border-primary/30 focus:border-primary"
                   data-testid="input-email"
                   required
                 />
@@ -224,7 +224,7 @@ export default function Signup() {
                     placeholder="Create a strong password"
                     value={formData.password}
                     onChange={(e) => handleInputChange("password", e.target.value)}
-                    className="bg-muted/20 border-primary/30 focus:border-primary pr-10"
+                    className="bg-background text-foreground placeholder:text-muted-foreground border-primary/30 focus:border-primary pr-10"
                     data-testid="input-password"
                   />
                   <Button
@@ -255,7 +255,7 @@ export default function Signup() {
                     placeholder="Confirm your password"
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-                    className="bg-muted/20 border-primary/30 focus:border-primary pr-10"
+                    className="bg-background text-foreground placeholder:text-muted-foreground border-primary/30 focus:border-primary pr-10"
                     data-testid="input-confirm-password"
                   />
                   <Button
