@@ -1,6 +1,8 @@
+import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import BlogCardImage from "@/components/BlogCardImage";
 import type { BlogPost } from "@shared/schema";
 
 export default function BlogSection() {
@@ -49,58 +51,59 @@ export default function BlogSection() {
           </div>
         ) : featuredPosts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredPosts.map((post) => (
-              <article
-                key={post.id}
-                className="glass-card rounded-xl overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer"
-                data-testid={`featured-article-${post.id}`}
-              >
-                <img
-                  src={post.featuredImageUrl || "https://images.unsplash.com/photo-1444927714506-8492d94b5ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300"}
-                  alt={post.title}
-                  className="w-full h-48 object-cover"
-                  data-testid={`img-featured-post-${post.id}`}
-                />
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className={`px-3 py-1 text-xs font-medium rounded-full ${
-                      post.category === 'Planetary Transits' ? 'bg-primary/20 text-primary' :
-                      post.category === 'Love & Relationships' ? 'bg-accent/20 text-accent' :
-                      post.category === 'Career & Finance' ? 'bg-gold-400/20 text-gold-400' :
-                      'bg-mystic-500/20 text-mystic-500'
-                    }`}>
-                      {post.category}
-                    </span>
-                    <span className="text-xs text-muted-foreground" data-testid={`text-featured-post-date-${post.id}`}>
-                      {new Date(post.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-semibold text-foreground mb-3 line-clamp-2" data-testid={`text-featured-post-title-${post.id}`}>
-                    {post.title}
-                  </h3>
-                  <p className="text-muted-foreground mb-4 line-clamp-3" data-testid={`text-featured-post-excerpt-${post.id}`}>
-                    {post.excerpt}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <img
-                        src="/attached_assets/jml.png"
-                        alt="JMLAstro Team"
-                        className="w-8 h-8 rounded-full object-cover bg-white p-1"
-                      />
-                      <span className="text-sm text-muted-foreground" data-testid={`text-featured-post-author-${post.id}`}>
-                        {post.authorName || 'JMLAstro Team'}
+            {featuredPosts.map((post, index) => (
+              <Link key={post.id} href={`/blog/${post.slug}`}>
+                <article
+                  className="glass-card rounded-xl overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer"
+                  data-testid={`featured-article-${post.id}`}
+                >
+                  <BlogCardImage
+                    post={post}
+                    imageIndex={index}
+                    className="w-full h-48 object-cover"
+                    data-testid={`img-featured-post-${post.id}`}
+                  />
+                  <div className="p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+                        post.category === 'Planetary Transits' ? 'bg-primary/20 text-primary' :
+                        post.category === 'Love & Relationships' ? 'bg-accent/20 text-accent' :
+                        post.category === 'Career & Finance' ? 'bg-gold-400/20 text-gold-400' :
+                        'bg-mystic-500/20 text-mystic-500'
+                      }`}>
+                        {post.category}
+                      </span>
+                      <span className="text-xs text-muted-foreground" data-testid={`text-featured-post-date-${post.id}`}>
+                        {new Date(post.createdAt).toLocaleDateString()}
                       </span>
                     </div>
-                    <button 
-                      className="text-primary hover:text-primary/80 transition-colors duration-200"
-                      data-testid={`button-read-featured-post-${post.id}`}
-                    >
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
+                    <h3 className="text-xl font-semibold text-foreground mb-3 line-clamp-2" data-testid={`text-featured-post-title-${post.id}`}>
+                      {post.title}
+                    </h3>
+                    <p className="text-muted-foreground mb-4 line-clamp-3" data-testid={`text-featured-post-excerpt-${post.id}`}>
+                      {post.excerpt}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <img
+                          src="/attached_assets/jml.png"
+                          alt="JMLAstro Team"
+                          className="w-8 h-8 rounded-full object-cover bg-white p-1"
+                        />
+                        <span className="text-sm text-muted-foreground" data-testid={`text-featured-post-author-${post.id}`}>
+                          {post.authorName || 'JMLAstro Team'}
+                        </span>
+                      </div>
+                      <span
+                        className="text-primary hover:text-primary/80 transition-colors duration-200"
+                        data-testid={`button-read-featured-post-${post.id}`}
+                      >
+                        <ArrowRight className="w-4 h-4" />
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </article>
+                </article>
+              </Link>
             ))}
           </div>
         ) : (
@@ -108,7 +111,7 @@ export default function BlogSection() {
             {/* Mock posts when no real posts are available */}
             <article className="glass-card rounded-xl overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer" data-testid="mock-featured-article-1">
               <img
-                src="https://images.unsplash.com/photo-1444927714506-8492d94b5ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300"
+                src="https://images.unsplash.com/photo-1444927714506-8492d94b5ba0?w=600&h=300&fit=crop"
                 alt="Understanding Mercury Retrograde Effects"
                 className="w-full h-48 object-cover"
               />
@@ -143,7 +146,7 @@ export default function BlogSection() {
 
             <article className="glass-card rounded-xl overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer" data-testid="mock-featured-article-2">
               <img
-                src="https://images.unsplash.com/photo-1518709268805-4e9042af2ac0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300"
+                src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=600&h=300&fit=crop"
                 alt="Zodiac Signs Compatibility Guide"
                 className="w-full h-48 object-cover"
               />
@@ -178,7 +181,7 @@ export default function BlogSection() {
 
             <article className="glass-card rounded-xl overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer" data-testid="mock-featured-article-3">
               <img
-                src="https://images.unsplash.com/photo-1535791311743-9cc3a8b2b4c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300"
+                src="https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?w=600&h=300&fit=crop"
                 alt="Career Success Through Astrology"
                 className="w-full h-48 object-cover"
               />

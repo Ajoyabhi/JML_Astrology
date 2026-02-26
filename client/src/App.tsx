@@ -18,6 +18,7 @@ import Calculators from "@/pages/calculators";
 import Horoscope from "@/pages/horoscope";
 import Astrologers from "@/pages/astrologers";
 import Blog from "@/pages/blog";
+import BlogPost from "@/pages/blog-post";
 import Services from "@/pages/services";
 import Payment from "@/pages/payment";
 import PaymentSuccess from "@/pages/payment-success";
@@ -26,6 +27,7 @@ import TermsOfService from "@/pages/terms-of-service";
 import RefundPolicy from "@/pages/refund-policy";
 import ContactUs from "@/pages/contact-us";
 import HelpCenter from "@/pages/help-center";
+import Account from "@/pages/account";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -77,6 +79,13 @@ function Router() {
                 </PageTransition>
               )}
             </Route>
+            <Route path="/blog/:slug">
+              {() => (
+                <PageTransition>
+                  <BlogPost />
+                </PageTransition>
+              )}
+            </Route>
             <Route path="/blog">
               {() => (
                 <PageTransition>
@@ -102,6 +111,13 @@ function Router() {
               {() => (
                 <PageTransition>
                   <PaymentSuccess />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/account">
+              {() => (
+                <PageTransition>
+                  <Account />
                 </PageTransition>
               )}
             </Route>
@@ -164,6 +180,13 @@ function Router() {
                 </PageTransition>
               )}
             </Route>
+            <Route path="/account">
+              {() => (
+                <PageTransition>
+                  <Account />
+                </PageTransition>
+              )}
+            </Route>
             <Route path="/calculators">
               {() => (
                 <PageTransition>
@@ -182,6 +205,13 @@ function Router() {
               {() => (
                 <PageTransition>
                   <Astrologers />
+                </PageTransition>
+              )}
+            </Route>
+            <Route path="/blog/:slug">
+              {() => (
+                <PageTransition>
+                  <BlogPost />
                 </PageTransition>
               )}
             </Route>

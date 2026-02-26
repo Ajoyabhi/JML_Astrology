@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import Navigation from "@/components/Navigation";
 import DonationBanner from "@/components/DonationBanner";
 import Footer from "@/components/Footer";
@@ -5,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Newspaper } from "lucide-react";
 import { BlogPostSkeleton } from "@/components/SkeletonLoader";
+import BlogCardImage from "@/components/BlogCardImage";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { BlogPost } from "@shared/schema";
 
@@ -39,55 +41,56 @@ export default function Blog() {
             </div>
           ) : posts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {posts.map((post) => (
-                <article
-                  key={post.id}
-                  className="glass-card rounded-xl overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer"
-                  data-testid={`article-${post.id}`}
-                >
-                  <img
-                    src={post.featuredImageUrl || "https://images.unsplash.com/photo-1444927714506-8492d94b5ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300"}
-                    alt={post.title}
-                    className="w-full h-48 object-cover"
-                    data-testid={`img-post-${post.id}`}
-                  />
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className={`px-3 py-1 text-xs font-medium rounded-full ${
-                        post.category === 'Planetary Transits' ? 'bg-primary/20 text-primary' :
-                        post.category === 'Love & Relationships' ? 'bg-accent/20 text-accent' :
-                        post.category === 'Career & Finance' ? 'bg-gold-400/20 text-gold-400' :
-                        'bg-mystic-500/20 text-mystic-500'
-                      }`}>
-                        {post.category}
-                      </span>
-                      <span className="text-xs text-muted-foreground" data-testid={`text-post-date-${post.id}`}>
-                        {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : 'Recent'}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-semibold text-foreground mb-3 line-clamp-2" data-testid={`text-post-title-${post.id}`}>
-                      {post.title}
-                    </h3>
-                    <p className="text-muted-foreground mb-4 line-clamp-3" data-testid={`text-post-excerpt-${post.id}`}>
-                      {post.excerpt}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <img
-                          src="/attached_assets/jml.png"
-                          alt="JMLAstro Team"
-                          className="w-8 h-8 rounded-full object-cover bg-white p-1"
-                        />
-                        <span className="text-sm text-muted-foreground" data-testid={`text-post-author-${post.id}`}>
-                          JMLAstro Team
+              {posts.map((post, index) => (
+                <Link key={post.id} href={`/blog/${post.slug}`}>
+                  <article
+                    className="glass-card rounded-xl overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer"
+                    data-testid={`article-${post.id}`}
+                  >
+                    <BlogCardImage
+                      post={post}
+                      imageIndex={index}
+                      className="w-full h-48 object-cover"
+                      data-testid={`img-post-${post.id}`}
+                    />
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+                          post.category === 'Planetary Transits' ? 'bg-primary/20 text-primary' :
+                          post.category === 'Love & Relationships' ? 'bg-accent/20 text-accent' :
+                          post.category === 'Career & Finance' ? 'bg-gold-400/20 text-gold-400' :
+                          'bg-mystic-500/20 text-mystic-500'
+                        }`}>
+                          {post.category}
+                        </span>
+                        <span className="text-xs text-muted-foreground" data-testid={`text-post-date-${post.id}`}>
+                          {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : 'Recent'}
                         </span>
                       </div>
-                      <button className="text-primary hover:text-primary/80 transition-colors duration-200" data-testid={`button-read-post-${post.id}`}>
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </CardContent>
-                </article>
+                      <h3 className="text-xl font-semibold text-foreground mb-3 line-clamp-2" data-testid={`text-post-title-${post.id}`}>
+                        {post.title}
+                      </h3>
+                      <p className="text-muted-foreground mb-4 line-clamp-3" data-testid={`text-post-excerpt-${post.id}`}>
+                        {post.excerpt}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <img
+                            src="/attached_assets/jml.png"
+                            alt="JMLAstro Team"
+                            className="w-8 h-8 rounded-full object-cover bg-white p-1"
+                          />
+                          <span className="text-sm text-muted-foreground" data-testid={`text-post-author-${post.id}`}>
+                            JMLAstro Team
+                          </span>
+                        </div>
+                        <span className="text-primary hover:text-primary/80 transition-colors duration-200" data-testid={`button-read-post-${post.id}`}>
+                          <ArrowRight className="w-4 h-4" />
+                        </span>
+                      </div>
+                    </CardContent>
+                  </article>
+                </Link>
               ))}
             </div>
           ) : (

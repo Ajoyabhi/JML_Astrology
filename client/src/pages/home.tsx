@@ -1,3 +1,4 @@
+import { Link, useLocation } from "wouter";
 import Navigation from "@/components/Navigation";
 import DonationBanner from "@/components/DonationBanner";
 import Footer from "@/components/Footer";
@@ -12,6 +13,7 @@ import { motion } from "framer-motion";
 export default function Home() {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const [, setLocation] = useLocation();
   
   const { data: consultations = [] } = useQuery<Consultation[]>({
     queryKey: ["/api/consultations"],
@@ -172,7 +174,8 @@ export default function Home() {
                 desc: t('home.daily_horoscope_desc'),
                 button: t('home.read_now'),
                 testId: "button-daily-horoscope",
-                delay: 0
+                delay: 0,
+                href: "/horoscope"
               },
               {
                 icon: MessageCircle,
@@ -181,7 +184,8 @@ export default function Home() {
                 desc: t('home.quick_consultation_desc'),
                 button: t('home.start_chat'),
                 testId: "button-quick-chat",
-                delay: 0.1
+                delay: 0.1,
+                href: "/astrologers"
               },
               {
                 icon: Calculator,
@@ -190,7 +194,8 @@ export default function Home() {
                 desc: t('home.birth_chart_desc'),
                 button: t('home.generate'),
                 testId: "button-birth-chart",
-                delay: 0.2
+                delay: 0.2,
+                href: "/calculators"
               }
             ].map((action, index) => (
               <motion.div
@@ -253,6 +258,7 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 + action.delay }}
+                    onClick={() => setLocation(action.href)}
                   >
                     <span className="relative z-10 flex items-center justify-center gap-2">
                       {action.button}

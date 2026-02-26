@@ -2,12 +2,20 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Menu, X, User, ChevronDown, Home, LogOut } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import type { User as UserType } from "@shared/schema";
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [location] = useLocation();
 
   const { t } = useLanguage();
@@ -59,14 +67,44 @@ export default function Navigation() {
             {isLoading ? (
               <div className="w-20 h-8 bg-muted animate-pulse rounded"></div>
             ) : isAuthenticated ? (
-              <Button
-                onClick={() => window.location.href = "/api/logout"}
-                variant="outline"
-                className="border-primary/30 text-primary hover:bg-primary/10"
-                data-testid="button-logout"
-              >
-                {t('nav.logout')}
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="flex items-center gap-2 text-muted-foreground hover:text-primary data-[state=open]:text-primary"
+                    data-testid="dropdown-user-trigger"
+                  >
+                    <User className="h-4 w-4 shrink-0" />
+                    <span className="font-medium">
+                      {(user as UserType)?.firstName ? `${t('nav.hiUser')} ${(user as UserType).firstName}` : t('nav.myAccount')}
+                    </span>
+                    <ChevronDown className="h-4 w-4 shrink-0" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-[11rem]">
+                  <DropdownMenuItem asChild>
+                    <Link href="/" className="flex items-center gap-2 cursor-pointer" data-testid="dropdown-home">
+                      <Home className="h-4 w-4" />
+                      {t('nav.home')}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/account" className="flex items-center gap-2 cursor-pointer" data-testid="dropdown-my-account">
+                      <User className="h-4 w-4" />
+                      {t('nav.myAccount')}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="text-primary focus:text-primary cursor-pointer"
+                    onClick={() => window.location.href = "/api/logout"}
+                    data-testid="dropdown-logout"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    {t('nav.logout')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <>
                 <Link href="/login">
@@ -126,14 +164,37 @@ export default function Navigation() {
             ))}
             <div className="pt-4 border-t border-border space-y-2">
               {isAuthenticated ? (
-                <Button
-                  onClick={() => window.location.href = "/api/logout"}
-                  variant="outline"
-                  className="w-full border-primary/30 text-primary hover:bg-primary/10"
-                  data-testid="mobile-button-logout"
-                >
-                  {t('nav.logout')}
-                </Button>
+                <>
+                  <Link
+                    href="/"
+                    className="flex items-center gap-2 w-full px-3 py-2 rounded-md text-muted-foreground hover:text-primary hover:bg-muted/50 transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    data-testid="mobile-link-home"
+                  >
+                    <Home className="h-4 w-4 shrink-0" />
+                    <span className="font-medium">{t('nav.home')}</span>
+                  </Link>
+                  <Link
+                    href="/account"
+                    className="flex items-center gap-2 w-full px-3 py-2 rounded-md text-muted-foreground hover:text-primary hover:bg-muted/50 transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    data-testid="mobile-link-my-account"
+                  >
+                    <User className="h-4 w-4 shrink-0" />
+                    <span className="font-medium">
+                      {(user as UserType)?.firstName ? `${t('nav.hiUser')} ${(user as UserType).firstName}` : t('nav.myAccount')}
+                    </span>
+                  </Link>
+                  <Button
+                    onClick={() => window.location.href = "/api/logout"}
+                    variant="outline"
+                    className="w-full border-primary/30 text-primary hover:bg-primary/10"
+                    data-testid="mobile-button-logout"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    {t('nav.logout')}
+                  </Button>
+                </>
               ) : (
                 <>
                   <Link href="/login">

@@ -22,6 +22,22 @@ const translations = {
     'nav.login': 'Login',
     'nav.logout': 'Logout',
     'nav.signup': 'Sign Up',
+    'nav.home': 'Home',
+    'nav.myAccount': 'My Account',
+    'nav.hiUser': 'Hi,',
+    
+    // Account Page
+    'account.title': 'My Account',
+    'account.subtitle': 'Your profile and quick links',
+    'account.profileSubtitle': 'JMLAstro member',
+    'account.memberSince': 'Member since',
+    'account.guest': 'Guest',
+    'account.goToDashboard': 'Go to Dashboard',
+    'account.quickLinks': 'Quick links',
+    'account.horoscope': 'Daily Horoscope',
+    'account.calculators': 'Calculators',
+    'account.bookConsultation': 'Book Consultation',
+    'account.helpCenter': 'Help Center',
     
     // Home Page
     'home.welcome': 'Welcome back,',
@@ -109,6 +125,22 @@ const translations = {
     'nav.login': 'लॉगिन',
     'nav.logout': 'लॉगआउट',
     'nav.signup': 'साइन अप',
+    'nav.home': 'होम',
+    'nav.myAccount': 'मेरा खाता',
+    'nav.hiUser': 'नमस्ते,',
+    
+    // Account Page
+    'account.title': 'मेरा खाता',
+    'account.subtitle': 'आपकी प्रोफ़ाइल और त्वरित लिंक',
+    'account.profileSubtitle': 'JMLAstro सदस्य',
+    'account.memberSince': 'सदस्य',
+    'account.guest': 'अतिथि',
+    'account.goToDashboard': 'डैशबोर्ड पर जाएं',
+    'account.quickLinks': 'त्वरित लिंक',
+    'account.horoscope': 'दैनिक राशिफल',
+    'account.calculators': 'कैलकुलेटर',
+    'account.bookConsultation': 'परामर्श बुक करें',
+    'account.helpCenter': 'सहायता केंद्र',
     
     // Home Page
     'home.welcome': 'वापस आपका स्वागत है,',
@@ -196,6 +228,22 @@ const translations = {
     'nav.login': 'লগইন',
     'nav.logout': 'লগআউট',
     'nav.signup': 'সাইন আপ',
+    'nav.home': 'হোম',
+    'nav.myAccount': 'আমার অ্যাকাউন্ট',
+    'nav.hiUser': 'হাই,',
+    
+    // Account Page
+    'account.title': 'আমার অ্যাকাউন্ট',
+    'account.subtitle': 'আপনার প্রোফাইল এবং দ্রুত লিংক',
+    'account.profileSubtitle': 'JMLAstro সদস্য',
+    'account.memberSince': 'সদস্য',
+    'account.guest': 'অতিথি',
+    'account.goToDashboard': 'ড্যাশবোর্ডে যান',
+    'account.quickLinks': 'দ্রুত লিংক',
+    'account.horoscope': 'দৈনিক রাশিফল',
+    'account.calculators': 'ক্যালকুলেটর',
+    'account.bookConsultation': 'পরামর্শ বুক করুন',
+    'account.helpCenter': 'সাহায্য কেন্দ্র',
     
     // Home Page
     'home.welcome': 'আবার স্বাগতম,',
